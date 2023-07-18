@@ -18,4 +18,4 @@
  ;; If there is more than one, they won't work right.
  )
 
-(setq gptel-api-key "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")
+(setq gptel-api-key "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")
