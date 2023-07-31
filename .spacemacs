@@ -39,7 +39,11 @@ This function should only modify configuration layer settings."
              ;; python-lsp-server 'pyright
              python-formatter 'black
              python-format-on-save t)
-     javascript
+     ;; (typescript)
+     (scheme :variables
+             scheme-implementations '(guile mit racket))
+     (javascript :variables
+                 javascript-backend 'tern)
      (ranger :variables
        ranger-override-dired 'ranger
        ranger-show-preview t)
@@ -77,6 +81,7 @@ This function should only modify configuration layer settings."
      better-defaults
      emacs-lisp
      helm
+     ;; ivy
      lsp
      multiple-cursors
      org
@@ -608,6 +613,8 @@ before packages are loaded."
    ;; evil
    evil-escape-delay 0.2
    evil-escape-key-sequence "jk")
+
+  (setq geiser-chicken-binary "chicken-csi")
 )
 
 
@@ -626,7 +633,7 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(org-agenda-files '("~/Agenda/personal.org" "/home/ayo/Agenda/vantedge.org"))
  '(package-selected-packages
-   '(evil-tex company-auctex company-math company-reftex auctex lsp-latex math-symbol-lists docker tablist aio docker-tramp dockerfile-mode ccls company-c-headers company-rtags company-ycmd cpp-auto-include disaster flycheck-rtags flycheck-ycmd gendoxy google-c-style helm-rtags rtags ycmd request-deferred langtool helm-lsp lsp-origami origami lsp-pyright lsp-python-ms lsp-ui add-node-modules-path vmd-mode toml-mode ron-mode racer rust-mode helm-gtags ggtags flycheck-rust dap-mode lsp-docker lsp-treemacs bui lsp-mode counsel-gtags counsel swiper ivy cargo yaml-mode yasnippet-snippets unfill mwim helm-company helm-c-yasnippet fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip company-web web-completion-data company-anaconda company auto-yasnippet auto-dictionary ac-ispell auto-complete treemacs-magit tern smeargle helm-ls-git helm-git-grep gitignore-templates git-timemachine git-modes git-messenger git-link forge yaml magit ghub closql emacsql-sqlite emacsql treepy magit-section git-commit with-editor compat yapfify ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil toc-org tagedit symon symbol-overlay string-inflection string-edit sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline-all-the-icons space-doc slim-mode scss-mode sass-mode restart-emacs request ranger rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode prettier-js popwin pony-mode poetry pippel pipenv pip-requirements pcre2el password-generator paradox overseer org-superstar open-junk-file npm-mode nose nodejs-repl nameless multi-line mmm-mode markdown-toc macrostep lorem-ipsum livid-mode live-py-mode link-hint json-reformat json-navigator json-mode js2-refactor js-doc inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-ag google-translate golden-ratio gh-md font-lock+ flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-terminal-cursor-changer evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr emmet-mode elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word cython-mode column-enforce-mode code-cells clean-aindent-mode centered-cursor-mode blacken auto-highlight-symbol auto-compile anaconda-mode aggressive-indent ace-link ace-jump-helm-line)))
+   '(geiser-gambit geiser-mit geiser-guile geiser-racket geiser xref helm-org-rifle helm helm-core counsel-css counsel-projectile flyspell-correct-ivy ivy-avy ivy-hydra ivy-purpose ivy-xref ivy-yasnippet lsp-ivy smex wgrep tide typescript-mode evil-tex company-auctex company-math company-reftex auctex lsp-latex math-symbol-lists docker tablist aio docker-tramp dockerfile-mode ccls company-c-headers company-rtags company-ycmd cpp-auto-include disaster flycheck-rtags flycheck-ycmd gendoxy google-c-style helm-rtags rtags ycmd request-deferred langtool helm-lsp lsp-origami origami lsp-pyright lsp-python-ms lsp-ui add-node-modules-path vmd-mode toml-mode ron-mode racer rust-mode helm-gtags ggtags flycheck-rust dap-mode lsp-docker lsp-treemacs bui lsp-mode counsel-gtags counsel swiper ivy cargo yaml-mode yasnippet-snippets unfill mwim helm-company helm-c-yasnippet fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip company-web web-completion-data company-anaconda company auto-yasnippet auto-dictionary ac-ispell auto-complete treemacs-magit tern smeargle helm-ls-git helm-git-grep gitignore-templates git-timemachine git-modes git-messenger git-link forge yaml magit ghub closql emacsql-sqlite emacsql treepy magit-section git-commit with-editor compat yapfify ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil toc-org tagedit symon symbol-overlay string-inflection string-edit sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline-all-the-icons space-doc slim-mode scss-mode sass-mode restart-emacs request ranger rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort pug-mode prettier-js popwin pony-mode poetry pippel pipenv pip-requirements pcre2el password-generator paradox overseer org-superstar open-junk-file npm-mode nose nodejs-repl nameless multi-line mmm-mode markdown-toc macrostep lorem-ipsum livid-mode live-py-mode link-hint json-reformat json-navigator json-mode js2-refactor js-doc inspector info+ indent-guide importmagic impatient-mode hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-flx helm-descbinds helm-css-scss helm-ag google-translate golden-ratio gh-md font-lock+ flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-terminal-cursor-changer evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr emmet-mode elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word cython-mode column-enforce-mode code-cells clean-aindent-mode centered-cursor-mode blacken auto-highlight-symbol auto-compile anaconda-mode aggressive-indent ace-link ace-jump-helm-line)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

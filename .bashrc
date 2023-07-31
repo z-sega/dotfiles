@@ -139,3 +139,14 @@ export DJANGO_READ_DOT_ENV_FILE=True
 
 # --------------
 
+# my preferences
+
+export VISUAL=vi
+export EDITOR=vi
+
+# --------------
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
