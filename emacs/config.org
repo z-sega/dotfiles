@@ -67,38 +67,6 @@
 
 *** Completion
 
-*** Formatting
-#+BEGIN_SRC emacs-lisp
-  
-  (use-package blacken
-    :ensure t
-    :hook (python-mode . blacken-mode))
-
-  (use-package apheleia
-    :ensure t
-    :diminish ""
-    :defines
-    apheleia-formatters
-    apheleia-mode-alist
-    :functions
-    apheleia-global-mode
-    :config
-    (setf (alist-get 'black apheleia-formatters)
-        '("/opt/homebrew/bin/black" "-"))
-    (setf (alist-get 'prettier-json apheleia-formatters)
-          '("prettier" "--stdin-filepath" filepath))
-    (setf (alist-get 'prettier apheleia-formatters)
-          '("prettier" "--stdin-filepath" filepath))
-    (setf (alist-get 'prettier apheleia-formatters)
-          '("prettier" "--stdin-filepath" filepath))
-    (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
-    (add-to-list 'apheleia-mode-alist '(web-mode . prettier))
-    (apheleia-global-mode +1))
-
-#+END_SRC
-
-**** Company
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package company
@@ -136,6 +104,34 @@
     (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
     (add-to-list 'apheleia-mode-alist '(web-mode . prettier))
     (apheleia-global-mode +1))
+
+#+END_SRC
+
+*** Ligatures
+
+#+BEGIN_SRC emacs-lisp
+
+    (use-package ligature
+      :ensure t)
+
+    (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+    ;; Enable the www ligature in every possible major mode
+    (ligature-set-ligatures 't '("www"))
+
+    ;; Enable ligatures in programming modes                                                           
+    (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+                                         ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+                                         "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+                                         "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+                                         "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+                                         "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+                                         "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+                                         "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+                                         "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+                                         "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+
+    (global-ligature-mode 't)
 
 #+END_SRC
 
@@ -537,12 +533,132 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
 #+END_SRC
 
+** Racket
+#+BEGIN_SRC emacs-lisp
+
+  (use-package racket-mode
+    :straight t
+    :hook
+    ((racket-mode . racket-xp-mode)
+     (racket-mode . paredit-mode)
+     (racket-mode . rainbow-delimiters-mode)))
+
+#+END_SRC
+** Web
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package web-mode
+    :after (add-node-modules-path)
+    :ensure t
+    :mode (("\\.js\\'" . web-mode)
+	   ("\\.jsx\\'" . web-mode)
+	   ("\\.ts\\'" . web-mode)
+	   ("\\.tsx\\'" . web-mode)
+	   ("\\.html\\'" . web-mode))
+    :config
+    (setq web-mode-markup-indent-offset 2
+	  web-mode-code-indent-offset 2
+	  web-mode-css-indent-offset 2
+	  web-mode-enable-auto-closing t
+	  web-mode-enable-auto-opening t
+	  web-mode-enable-auto-pairing t
+	  web-mode-enable-auto-indentation t
+	  web-mode-enable-auto-quoting t
+	  web-mode-enable-current-column-highlight t
+	  web-mode-enable-current-element-highlight t)
+    :commands web-mode)
+
+#+END_SRC
+
+** Java
+
+#+BEGIN_SRC emacs-lisp
+  
+  ;;(use-package lsp-java
+  ;;  :straight t)
+
+#+END_SRC
+
+** React
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq gc-cons-threshold (* 100 1024 1024)
+	read-process-output-max (* 1024 1024)
+	company-idle-delay 0.0
+	company-minimum-prefix-length 1
+	create-lockfiles nil)
+
+  (with-eval-after-load 'js
+    (define-key js-mode-map (kbd "M-.") nil))
+
+#+END_SRC
+
 * Writing
 ** Markdown
 #+BEGIN_SRC emacs-lisp
 
   (use-package markdown-mode
     :straight t)
+
+#+END_SRC
+** Food Recipes
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-chef
+    :ensure t)
+
+#+END_SRC
+
+** NoteTaking
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-roam
+    :ensure t
+    :init (setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/RoamNotes/")
+    (org-roam-completion-everywhere t)
+    (org-roam-dailies-capture-templates
+    '(("d" "default" entry "* %<%I:%M %p>: %?"
+       :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+    (org-roam-capture-templates
+     '(("d" "default" plain
+        "%?"
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+date: %U\n")
+        :unnarrowed t)
+       ("b" "book notes" plain
+        (file "~/RoamNotes/Templates/book-note-template.org")
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+        :unnarrowed t)
+       ("p" "project" plain (file "~/RoamNotes/Templates/project-template.org")
+        :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+        :unnarrowed t)))
+    :bind
+    (("C-c n l" . org-roam-buffer-toggle)
+     ("C-c n f" . org-roam-node-find)
+     ("C-c n i" . org-roam-node-insert)
+     :map org-mode-map
+     ("C-M-i" . completion-at-point)
+     :map org-roam-dailies-map
+       ("Y" . org-roam-dailies-capture-yesterday)
+       ("T" . org-roam-dailies-capture-tomorrow)
+       ("v" . org-roam-dailies-goto-date)
+       ("c" . org-roam-dailies-capture-date))
+    :bind-keymap
+    ("C-c n d". org-roam-dailies-map)
+    :config
+    (require 'org-roam-dailies)
+    (org-roam-db-autosync-mode))
+
+
+  (defun new-note ()
+    "Spawn a new buffer for note taking."
+    (interactive)
+    (switch-to-buffer (generate-new-buffer "*note*"))
+    (text-mode)
+    (insert-in-buffer "*note*" "New Note"))
 
 #+END_SRC
 
