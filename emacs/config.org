@@ -1,0 +1,173 @@
+
+* Inspiration
+[[https://ryan.himmelwright.net/post/org-babel-setup/][Ryan Himmelwright's Org-Babel Emacs Config]]
+
+* Package Management
+
+** Package Repositories
+#+BEGIN_SRC emacs-lisp
+
+  (require 'package)
+  (setq package-archives
+        '(("gnu" . "https://elpa.gnu.org/packages/")
+          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+          ("melpa" . "https://melpa.org/packages/")))
+  (package-initialize)
+
+#+END_SRC
+
+** Setup Straight
+
+#+BEGIN_SRC emacs-lisp
+  
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+#+END_SRC
+
+
+** Packages
+
+*** Autocorrect
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode)
+    :bind (:map flycheck-mode-map
+                ("M-n" . flycheck-next-error)
+                ("M-p" . flycheck-previous-error)))
+
+#+END_SRC
+
+*** Snippets
+
+#+BEGIN_SRC emacs-lisp
+
+   (use-package yasnippet
+     :ensure t
+     :config
+     (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+     (yas-global-mode 1))
+
+#+END_SRC
+
+*** Completion
+
+**** Company
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package company
+     :ensure t
+     :init
+     (global-company-mode))
+
+#+END_SRC
+
+*** Formatting
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package blacken
+    :ensure t
+    :hook (python-mode . blacken-mode))
+
+  (use-package apheleia
+    :ensure t
+    :diminish ""
+    :defines
+    apheleia-formatters
+    apheleia-mode-alist
+    :functions
+    apheleia-global-mode
+    :config
+    (setf (alist-get 'black apheleia-formatters)
+        '("/opt/homebrew/bin/black" "-"))
+    (setf (alist-get 'prettier-json apheleia-formatters)
+          '("prettier" "--stdin-filepath" filepath))
+    (setf (alist-get 'prettier apheleia-formatters)
+          '("prettier" "--stdin-filepath" filepath))
+    (setf (alist-get 'prettier apheleia-formatters)
+          '("prettier" "--stdin-filepath" filepath))
+    (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
+    (add-to-list 'apheleia-mode-alist '(web-mode . prettier))
+    (apheleia-global-mode +1))
+
+#+END_SRC
+
+* Start-up Options
+** Splash Screen
+#+BEGIN_SRC emacs-lisp
+
+  (setq inhibit-splash-screen t
+        initial-scratch-message nil
+        initial-major-mode 'org-mode)
+
+#+END_SRC
+
+
+* Programming
+** Python
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . lsp-deferred)
+    :custom
+    (python-shell-interpreter "python3"))
+
+#+END_SRC
+
+** Common Lisp
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package elisp-slime-nav
+    :straight t)
+
+  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
+    (add-hook hook 'turn-on-elisp-slime-nav-mode))
+
+  (use-package sly
+    :straight t
+    :config
+    (setq sly-contribs '(sly-fancy))
+    (setq inferior-lisp-program "/opt/homebrew/bin/sbcl") 
+    :hook (lisp-mode . sly-mode))
+
+#+END_SRC
+
+* Mail
+** Notmuch
+[[eww:https://jonathanchu.is/posts/emacs-notmuch-isync-msmtp-setup/][Notmuch emacs setup]]
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package notmuch
+    :ensure t
+    :defer t)
+
+  (setq send-mail-function 'sendmail-send-it
+      sendmail-program "/opt/homebrew/bin/msmtp"
+      mail-specify-envelope-from t
+      message-sendmail-envelope-from 'header
+      mail-envelope-from 'header)
+
+#+END_SRC
+
+** mu4e
+[[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
+

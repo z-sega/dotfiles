@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: HEADER
+# key: <h
+# --
+#+TITLE: ${1:title}
+#+AUTHOR: Ayo Onipe
+#+DATE: <`(format-time-string "%Y-%m-%d")`>
+#+EMAIL: ayosemail@gmail.com
+
+$0
