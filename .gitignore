@@ -1,0 +1,35 @@
+# Emacs backup files
+*~
+\#*\#
+.\#*
+
+# Auto-save files
+auto-save-list/
+*.elc
+*.pyc
+*.o
+*.so
+*.log
+
+# Org-mode clock and agenda data
+org-clock-save.el
+org-id-locations
+
+# Tramp connections
+.tramp
+
+# Desktop save files
+.emacs.desktop
+.emacs.desktop.lock
+
+# Package/straight build directories
+elpa/
+straight/
+eln-cache/
+eshell/history
+eshell/lastdir
+
+# Project-specific
+/.local/
+/.cache/
+/custom.el
