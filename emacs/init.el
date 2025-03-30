@@ -10,3 +10,13 @@
 
 (org-babel-load-file  "~/.emacs.d/mac.org")
 (org-babel-load-file  "~/.emacs.d/config.org")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(js-indent-level 2)
+ '(scroll-bar-mode nil)
+ '(standard-indent 2)
+ '(tool-bar-mode nil)
+ '(visible-bell t))
