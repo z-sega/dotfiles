@@ -143,6 +143,33 @@
 	version-control t)     ;; Use versioned backups
 
 #+END_SRC
+** Utilities
+
+*** Commenting
+
+#+BEGIN_SRC emacs-lisp
+ (defun comment-sexp ()
+  "Comment out the sexp at point."
+  (interactive)
+  (save-excursion
+    (mark-sexp)
+    (paredit-comment-dwim)))
+#+END_SRC
+
+*** Read Variables from .env
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun read-env-variable (variable-name)
+    "Read the value of VARIABLE-NAME from the .env file."
+    (with-temp-buffer
+      (insert-file-contents "/Users/ayo/.emacs.d/.env")
+      (goto-char (point-min))
+      (when (re-search-forward (concat "^" (regexp-quote variable-name) "=\\(.+\\)") nil t)
+	(match-string 1))))
+
+#+END_SRC
+
 * Window Management
 ** Buffers
 #+BEGIN_SRC emacs-lisp
@@ -382,6 +409,31 @@ Quickly switch to other window.
 #+END_SRC
 
 * Programming
+** Shell
+*** Completion
+Over tramp completion is very slow, native-complete will save the day/week/year.
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun shell-mode-hook-setup ()
+    "Set up `shell-mode'."
+
+    (setq-local company-backends '((company-files company-native-complete)))
+    ;; `company-native-complete' is better than `completion-at-point'
+    (local-set-key (kbd "TAB") 'company-complete)
+
+    ;; @see https://github.com/redguardtoo/emacs.d/issues/882
+    (setq-local company-idle-delay 1)
+
+    ;; prevent company-mode in remote buffers
+    (when (file-remote-p default-directory)
+      (company-mode -1)))
+  
+  (add-hook 'eshell-mode-hook 'shell-mode-hook-setup)
+  (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
+
+#+END_SRC
+
 ** Python
 
 #+BEGIN_SRC emacs-lisp
@@ -410,6 +462,33 @@ Quickly switch to other window.
     (setq sly-contribs '(sly-fancy))
     (setq inferior-lisp-program "/opt/homebrew/bin/sbcl") 
     :hook (lisp-mode . sly-mode))
+
+#+END_SRC
+
+* AI/LLM Integration
+
+Using gptel for integration with LLM tools.
+
+[[eww:https://github.com/karthink/gptel?tab=readme-ov-file#anthropic-claude][gptel for claude]]
+
+#+BEGIN_SRC emacs-lisp
+
+    (use-package gptel
+      :ensure t)
+
+    (setq gptel-api-key
+          (read-env-variable "OPENAI_API_KEY"))
+
+    (gptel-make-anthropic "Claude"
+      :stream t
+      :key (read-env-variable "CLAUDE_API_KEY"))
+
+    (gptel-make-openai "DeepSeek"
+      :host "api.deepseek.com"
+      :endpoint "/chat/completions"
+      :stream t
+      :key (read-env-variable "DEEPSEEK_API_KEY")
+      :models '(deepseek-chat deepseek-coder))
 
 #+END_SRC
 
