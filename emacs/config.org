@@ -1,3 +1,7 @@
+#+TITLE: My Emacs Configuration
+#+AUTHOR: Ayo Onipe
+#+DATE: <2025-3-30>
+#+EMAIL: ayosemail@gmail.com
 
 * Inspiration
 [[https://ryan.himmelwright.net/post/org-babel-setup/][Ryan Himmelwright's Org-Babel Emacs Config]]
@@ -36,7 +40,6 @@
 #+END_SRC
 
 ** Packages
-
 *** Autocorrect
 
 #+BEGIN_SRC emacs-lisp
@@ -63,6 +66,36 @@
 #+END_SRC
 
 *** Completion
+
+*** Formatting
+#+BEGIN_SRC emacs-lisp
+  
+  (use-package blacken
+    :ensure t
+    :hook (python-mode . blacken-mode))
+
+  (use-package apheleia
+    :ensure t
+    :diminish ""
+    :defines
+    apheleia-formatters
+    apheleia-mode-alist
+    :functions
+    apheleia-global-mode
+    :config
+    (setf (alist-get 'black apheleia-formatters)
+        '("/opt/homebrew/bin/black" "-"))
+    (setf (alist-get 'prettier-json apheleia-formatters)
+          '("prettier" "--stdin-filepath" filepath))
+    (setf (alist-get 'prettier apheleia-formatters)
+          '("prettier" "--stdin-filepath" filepath))
+    (setf (alist-get 'prettier apheleia-formatters)
+          '("prettier" "--stdin-filepath" filepath))
+    (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
+    (add-to-list 'apheleia-mode-alist '(web-mode . prettier))
+    (apheleia-global-mode +1))
+
+#+END_SRC
 
 **** Company
 
@@ -409,6 +442,37 @@ Quickly switch to other window.
 #+END_SRC
 
 * Programming
+** Utilities
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package exec-path-from-shell
+     :ensure t
+     :config (exec-path-from-shell-initialize))
+
+   (use-package expand-region
+     :ensure t
+     :bind (("C-=" . er/expand-region)
+            ("C--" . er/contract-region)))
+
+  (use-package which-key
+     :ensure t
+     :config (which-key-mode))
+
+  (use-package paredit
+    :straight t
+    :bind
+    (:map paredit-mode-map
+          ("M-s" . nil)))
+
+  (use-package rainbow-delimiters
+    :straight t)
+
+  (use-package all-the-icons
+     :straight t)
+
+#+END_SRC
+
 ** Shell
 *** Completion
 Over tramp completion is very slow, native-complete will save the day/week/year.
@@ -462,6 +526,23 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
     (setq sly-contribs '(sly-fancy))
     (setq inferior-lisp-program "/opt/homebrew/bin/sbcl") 
     :hook (lisp-mode . sly-mode))
+
+#+END_SRC
+
+** Haskell
+#+BEGIN_SRC emacs-lisp
+
+   (use-package haskell-mode
+     :straight t)  
+
+#+END_SRC
+
+* Writing
+** Markdown
+#+BEGIN_SRC emacs-lisp
+
+  (use-package markdown-mode
+    :straight t)
 
 #+END_SRC
 
