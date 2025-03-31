@@ -1,3 +1,9 @@
+;;; package --- Summary
+
+;;; Commentary:
+;; Just my Emacs init.
+
+;;; Code:
 ;;(package-initialize)
 
 (custom-set-faces
@@ -16,6 +22,18 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(js-indent-level 2)
+ '(notmuch-saved-searches
+   '((:name "inbox" :query "tag:inbox" :key [105] :sort-order
+	    newest-first)
+     (:name "unread" :query "tag:unread" :key [117] :sort-order
+	    newest-first)
+     (:name "flagged" :query "tag:flagged" :key [102] :sort-order
+	    newest-first)
+     (:name "sent" :query "tag:sent" :key [116] :sort-order
+	    newest-first)
+     (:name "drafts" :query "tag:draft" :key [100] :sort-order
+	    newest-first)
+     (:name "all mail" :query "*" :key [97] :sort-order newest-first)))
  '(scroll-bar-mode nil)
  '(standard-indent 2)
  '(tool-bar-mode nil)
