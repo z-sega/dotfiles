@@ -680,7 +680,7 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
 #+END_SRC
 
-** Common Lisp
+** Emacs Lisp
 
 #+BEGIN_SRC emacs-lisp
 
@@ -689,6 +689,17 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
     (add-hook hook 'turn-on-elisp-slime-nav-mode))
+
+
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration
+                 '(emacs-lisp-mode . "emacs-lisp")))
+
+#+END_SRC
+
+** Common Lisp
+
+#+BEGIN_SRC emacs-lisp
 
   (use-package sly
     :straight t
@@ -747,6 +758,14 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
 ** Typescript and Javascript
 #+BEGIN_SRC emacs-lisp
+
+  (setq major-mode-remap-alist
+      '((typescript-mode . typescript-ts-mode)
+        (tsx-mode . tsx-ts-mode)
+        (js-mode . js-ts-mode)
+        (js2-mode . js-ts-mode)))
+  
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 
   (use-package tide
     :ensure t
