@@ -505,10 +505,11 @@ Quickly switch to other window.
     (setq calendar-latitude 51.048615)
     (setq calendar-longitude -114.070847)
     (setq circadian-themes '((:sunrise . doom-nord)
-                           (:sunset  . doom-monokai-pro)))
+                             (:sunset  . doom-monokai-pro)))
     (circadian-setup))
 
 #+END_SRC
+
 * Programming
 ** Language Server Protocol
 
@@ -702,8 +703,7 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
   (use-package python-mode
     :ensure t
     :hook (python-mode . lsp-deferred)
-    :custom
-    (python-shell-interpreter "python3"))
+    :custom (python-shell-interpreter "python3"))
 
 #+END_SRC
 
@@ -845,6 +845,7 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
     :straight t)
 
 #+END_SRC
+
 ** Food Recipes
 #+BEGIN_SRC emacs-lisp
 
@@ -912,22 +913,19 @@ Using gptel for integration with LLM tools.
 
 #+BEGIN_SRC emacs-lisp
 
-    (use-package gptel
-      :ensure t)
+  (use-package gptel
+    :ensure t)
 
-    (setq gptel-api-key
-          (read-env-variable "OPENAI_API_KEY"))
+  (setq gptel-api-key
+        (read-env-variable "OPENAI_API_KEY"))
 
-    (gptel-make-anthropic "Claude"
-      :stream t
-      :key (read-env-variable "CLAUDE_API_KEY"))
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (read-env-variable "CLAUDE_API_KEY"))
 
-    (gptel-make-openai "DeepSeek"
-      :host "api.deepseek.com"
-      :endpoint "/chat/completions"
-      :stream t
-      :key (read-env-variable "DEEPSEEK_API_KEY")
-      :models '(deepseek-chat deepseek-coder))
+  (gptel-make-deepseek "DeepSeek"
+    :stream t
+    :key (read-env-variable "DEEPSEEK_API_KEY"))
 
 #+END_SRC
 
