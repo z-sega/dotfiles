@@ -502,9 +502,9 @@ Quickly switch to other window.
   (use-package circadian
     :ensure t
     :config
-    (setq calendar-latitude 51.048615)
-    (setq calendar-longitude -114.070847)
-    (setq circadian-themes '((:sunrise . doom-nord)
+    (setq calendar-latitude 44.162758)
+    (setq calendar-longitude -77.383232)
+    (setq circadian-themes '((:sunrise . doom-moonlight)
                              (:sunset  . doom-monokai-pro)))
     (circadian-setup))
 
@@ -538,7 +538,7 @@ Quickly switch to other window.
     (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
     ;;(lsp-enable-dap-auto-configure t)     ; Debug support
     (lsp-enable-file-watchers nil)
-    (lsp-enable-folding nil)              ; I disable folding since I use origami
+    (lsp-enable-folding nil)              ; I disable folding since I use hideshow
     (lsp-enable-imenu t)
     (lsp-enable-indentation nil)          ; I use prettier
     (lsp-enable-links nil)                ; No need since we have `browse-url'
@@ -671,6 +671,100 @@ Quickly switch to other window.
 
 #+END_SRC
 
+*** Folding
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package hideshow ; built-in
+    :commands (hs-cycle
+               hs-global-cycle)
+    :bind (:map prog-mode-map
+                ("C-<tab>" . hs-cycle)
+                ("<backtab>" . hs-global-cycle)
+                ("C-S-<iso-lefttab>" . hs-global-cycle))
+    :config
+    (setq hs-hide-comments-when-hiding-all nil
+  	;; Nicer code-folding overlays (with fringe indicators)
+  	hs-set-up-overlay #'hideshow-set-up-overlay-fn)
+
+    (defface hideshow-folded-face
+      `((t (:inherit font-lock-comment-face :weight light)))
+      "Face to hightlight `hideshow' overlays."
+      :group 'hideshow)
+
+    (defun hideshow-set-up-overlay-fn (ov)
+      (when (eq 'code (overlay-get ov 'hs))
+        (overlay-put
+         ov 'display (propertize "  [...]  " 'face 'hideshow-folded-face))))
+
+    (dolist (hs-command (list #'hs-cycle
+                              #'hs-global-cycle))
+      (advice-add hs-command :before
+  		(lambda (&optional end) "Advice to ensure `hs-minor-mode' is enabled"
+                    (unless (bound-and-true-p hs-minor-mode)
+                      (hs-minor-mode +1)))))
+
+    (defun hs-cycle (&optional level)
+      (interactive "p")
+      (save-excursion
+        (if (= level 1)
+            (pcase last-command
+              ('hs-cycle
+               (hs-hide-level 1)
+               (setq this-command 'hs-cycle-children))
+              ('hs-cycle-children
+               ;;TODO: Fix this case. `hs-show-block' needs to be called twice to
+               ;;open all folds of the parent block.
+               (hs-show-block)
+               (hs-show-block)
+               (setq this-command 'hs-cycle-subtree))
+              ('hs-cycle-subtree
+               (hs-hide-block))
+              (_
+               (if (not (hs-already-hidden-p))
+  		 (hs-hide-block)
+                 (hs-hide-level 1)
+                 (setq this-command 'hs-cycle-children))))
+  	(hs-hide-level level)
+  	(setq this-command 'hs-hide-level))))
+
+    (defun hs-global-cycle ()
+      (interactive)
+      (pcase last-command
+        ('hs-global-cycle
+         (save-excursion (hs-show-all))
+         (setq this-command 'hs-global-show))
+        (_ (hs-hide-all))))  
+
+    ;; extra folding support for more languages
+    (unless (assq 't hs-special-modes-alist)
+      (setq hs-special-modes-alist
+            (append
+             '((vimrc-mode "{{{" "}}}" "\"")
+               ;; (yaml-mode "\\s-*\\_<\\(?:[^:]+\\)\\_>"
+               ;;            ""
+               ;;            "#"
+               ;;            +fold-hideshow-forward-block-by-indent-fn nil)
+               ;; (haml-mode "[#.%]" "\n" "/" +fold-hideshow-haml-forward-sexp-fn nil)
+               ;; (ruby-mode "class\\|d\\(?:ef\\|o\\)\\|module\\|[[{]"
+               ;;            "end\\|[]}]"
+               ;;            "#\\|=begin"
+               ;;            ruby-forward-sexp)
+               ;; (enh-ruby-mode "class\\|d\\(?:ef\\|o\\)\\|module\\|[[{]"
+               ;;                "end\\|[]}]"
+               ;;                "#\\|=begin"
+               ;;                enh-ruby-forward-sexp nil)
+               (matlab-mode "^\s*if\\|switch\\|case\\|otherwise\\|while\\|^\s*for\\|try\\|catch\\|function"
+                            "end"
+                            "" (lambda (_arg) (matlab-forward-sexp)))
+               (nxml-mode "<!--\\|<[^/>]*[^/]>"
+  			"-->\\|</[^/>]*[^/]>"
+  			"<!--" sgml-skip-tag-forward nil))
+             hs-special-modes-alist
+             '((t))))))
+
+#+END_SRC
+
 ** Shell
 *** Completion
 Over tramp completion is very slow, native-complete will save the day/week/year.
@@ -696,13 +790,27 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
 #+END_SRC
 
-** Python
-
+** Elm
 #+BEGIN_SRC emacs-lisp
+
+    (use-package elm-mode
+      :ensure t)
+
+#+END_SRC
+
+** Python
+#+BEGIN_SRC emacs-lisp
+
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable))
 
   (use-package python-mode
     :ensure t
-    :hook (python-mode . lsp-deferred)
+    :hook 
+    ((python-mode . lsp-deferred)
+     (python-mode . elpy-mode))
     :custom (python-shell-interpreter "python3"))
 
 #+END_SRC
@@ -837,6 +945,25 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
 #+END_SRC
 
+* Org
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-contrib
+    :ensure t)
+
+  (require 'ob-oz)
+
+  (use-package ob-racket
+    :after org
+    :config
+    (add-hook 'ob-racket-pre-runtime-library-load-hook
+  	      #'ob-racket-raco-make-runtime-library)
+    :straight (ob-racket
+  	     :type git :host github :repo "hasu/emacs-ob-racket"
+  	     :files ("*.el" "*.rkt")))
+
+#+END_SRC
+
 * Writing
 ** Markdown
 #+BEGIN_SRC emacs-lisp
@@ -926,6 +1053,12 @@ Using gptel for integration with LLM tools.
   (gptel-make-deepseek "DeepSeek"
     :stream t
     :key (read-env-variable "DEEPSEEK_API_KEY"))
+
+  (gptel-make-gemini "Gemini"
+    :stream t
+    :key (read-env-variable "GEMINI_API_KEY"))
+
+  (setq gptel-model 'gemini-2.0-flash-exp)
 
 #+END_SRC
 
