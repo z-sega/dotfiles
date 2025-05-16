@@ -200,6 +200,7 @@
 
 * Window Management
 ** Buffers
+
 #+BEGIN_SRC emacs-lisp
 
   (global-set-key [remap list-buffers] 'ibuffer)
@@ -218,6 +219,15 @@ Quickly switch to other window.
 #+END_SRC
 
 ** Frames
+Configurations for frames go here
+
+*** Transparency
+#+BEGIN_SRC emacs-lisp
+
+  (set-frame-parameter nil 'alpha-background 100) ; For current frame
+  (add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
+
+#+END_SRC
 
 ** Interactive Search/Do
 *** Vertico, Orderless, Consult, Embark & Prescient
@@ -281,7 +291,7 @@ Quickly switch to other window.
     ;; (orderless-component-separator #'orderless-escapable-split-on-space)
     (completion-styles '(orderless basic))
     (completion-category-defaults nil)
-    (completion-category-overrides '((file (styles partial-completion)))))
+    (completion-category-overrides '((file (styles basic partial-completion)))))
 
   ;; Enable rich annotations using the Marginalia package
   (use-package marginalia
@@ -990,6 +1000,9 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
     :custom
     (org-roam-directory "~/RoamNotes/")
     (org-roam-completion-everywhere t)
+    (org-roam-node-display-template
+     (concat "${title:*} "
+             (propertize "${tags:10}" 'face 'org-tag)))
     (org-roam-dailies-capture-templates
     '(("d" "default" entry "* %<%I:%M %p>: %?"
        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
@@ -1040,25 +1053,25 @@ Using gptel for integration with LLM tools.
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package gptel
-    :ensure t)
+   (use-package gptel
+     :ensure t)
+     
+   (setq gptel-api-key
+         (read-env-variable "OPENAI_API_KEY"))
 
-  (setq gptel-api-key
-        (read-env-variable "OPENAI_API_KEY"))
+   (gptel-make-anthropic "Claude"
+     :stream t
+     :key (read-env-variable "CLAUDE_API_KEY"))
 
-  (gptel-make-anthropic "Claude"
-    :stream t
-    :key (read-env-variable "CLAUDE_API_KEY"))
+   (gptel-make-deepseek "DeepSeek"
+     :stream t
+     :key (read-env-variable "DEEPSEEK_API_KEY"))
 
-  (gptel-make-deepseek "DeepSeek"
-    :stream t
-    :key (read-env-variable "DEEPSEEK_API_KEY"))
-
-  (gptel-make-gemini "Gemini"
-    :stream t
-    :key (read-env-variable "GEMINI_API_KEY"))
-
-  (setq gptel-model 'gemini-2.0-flash-exp)
+  (setq
+   gptel-model 'gemini-2.0-flash-exp
+   gptel-backend (gptel-make-gemini "Gemini"
+                   :key (read-env-variable "GEMINI_API_KEY")
+                   :stream t))
 
 #+END_SRC
 
