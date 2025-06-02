@@ -14,7 +14,6 @@
  '(default ((t (:inherit nil :extend nil :stipple nil :background "#222327" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 152 :width normal :foundry "nil" :family "TX-02"))))
  '(eshell-prompt ((t (:foreground "#FFD866" :weight bold)))))
 
-
 (org-babel-load-file  "~/.emacs.d/mac.org")
 (org-babel-load-file  "~/.emacs.d/config.org")
 (custom-set-variables

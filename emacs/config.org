@@ -9,14 +9,70 @@
 * Package Management
 
 ** Package Repositories
+Not compatible with elpaca
+
 #+BEGIN_SRC emacs-lisp
 
-  (require 'package)
-  (setq package-archives
-        '(("gnu" . "https://elpa.gnu.org/packages/")
-          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-          ("melpa" . "https://melpa.org/packages/")))
-  (package-initialize)
+  ;(require 'package)
+  ;(setq package-archives
+  ;      '(("gnu" . "https://elpa.gnu.org/packages/")
+  ;        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+  ;        ("melpa" . "https://melpa.org/packages/")))
+  ;(package-initialize)
+
+  (setq use-package-always-ensure t)
+
+
+#+END_SRC
+
+** Setup Elpaca
+Not compatible with package
+
+#+BEGIN_SRC emacs-lisp
+
+    (defvar elpaca-installer-version 0.11)
+    (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+    (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+    (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+    (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                                  :ref nil :depth 1 :inherit ignore
+                                  :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                                  :build (:not elpaca--activate-package)))
+    (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+           (build (expand-file-name "elpaca/" elpaca-builds-directory))
+           (order (cdr elpaca-order))
+           (default-directory repo))
+      (add-to-list 'load-path (if (file-exists-p build) build repo))
+      (unless (file-exists-p repo)
+        (make-directory repo t)
+        (when (<= emacs-major-version 28) (require 'subr-x))
+        (condition-case-unless-debug err
+            (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                      ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                      ,@(when-let* ((depth (plist-get order :depth)))
+                                                          (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                      ,(plist-get order :repo) ,repo))))
+                      ((zerop (call-process "git" nil buffer t "checkout"
+                                            (or (plist-get order :ref) "--"))))
+                      (emacs (concat invocation-directory invocation-name))
+                      ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                            "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                      ((require 'elpaca))
+                      ((elpaca-generate-autoloads "elpaca" repo)))
+                (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+              (error "%s" (with-current-buffer buffer (buffer-string))))
+          ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+      (unless (require 'elpaca-autoloads nil t)
+        (require 'elpaca)
+        (elpaca-generate-autoloads "elpaca" repo)
+        (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+    (add-hook 'after-init-hook #'elpaca-process-queues)
+    (elpaca `(,@elpaca-order))
+
+  ;; Install use-package support
+  (elpaca elpaca-use-package
+    ;; Enable use-package :ensure support for Elpaca.
+    (elpaca-use-package-mode))
 
 #+END_SRC
 
@@ -110,27 +166,23 @@
 
 #+BEGIN_SRC emacs-lisp
 
-    (use-package ligature
-      :ensure t)
-
-    (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-
+  (use-package ligature
+    :ensure t
+    :config
     ;; Enable the www ligature in every possible major mode
     (ligature-set-ligatures 't '("www"))
-
     ;; Enable ligatures in programming modes                                                           
     (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-                                         ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-                                         "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-                                         "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-                                         "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-                                         "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-                                         "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-                                         "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-                                         "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-                                         "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
-
-    (global-ligature-mode 't)
+                                     ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+                                     "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+                                     "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+                                     "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+                                     "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+                                     "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+                                     "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+                                     "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+                                     "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+    (global-ligature-mode 't))
 
 #+END_SRC
 
@@ -172,18 +224,6 @@
 
 #+END_SRC
 ** Utilities
-
-*** Commenting
-
-#+BEGIN_SRC emacs-lisp
- (defun comment-sexp ()
-  "Comment out the sexp at point."
-  (interactive)
-  (save-excursion
-    (mark-sexp)
-    (paredit-comment-dwim)))
-#+END_SRC
-
 *** Read Variables from .env
 
 #+BEGIN_SRC emacs-lisp
@@ -221,38 +261,20 @@ Quickly switch to other window.
 ** Frames
 Configurations for frames go here
 
-*** Transparency
-#+BEGIN_SRC emacs-lisp
-
-  (set-frame-parameter nil 'alpha-background 100) ; For current frame
-  (add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
-
-#+END_SRC
-
 ** Interactive Search/Do
 *** Vertico, Orderless, Consult, Embark & Prescient
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package vertico
-    :ensure t
-    ;; :custom
-    ;; (vertico-scroll-margin 0) ;; Different scroll margin
-    ;; (vertico-count 20) ;; Show more candidates
-    ;; (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
-    ;; (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
-    :init
-    (vertico-mode))
-
   ;; Persist history over Emacs restarts. Vertico sorts by history position.
   (use-package savehist
-    :ensure t
+    :straight t
     :init
     (savehist-mode))
 
   ;; A few more useful configurations...
   (use-package emacs
-    :ensure t
+    :straight t
     :custom
     ;; Support opening new minibuffers from inside existing minibuffers.
     (enable-recursive-minibuffers t)
@@ -271,17 +293,28 @@ Configurations for frames go here
     ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
     (defun crm-indicator (args)
       (cons (format "[CRM%s] %s"
-		    (replace-regexp-in-string
-		     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-		     crm-separator)
-		    (car args))
-	    (cdr args)))
+  		    (replace-regexp-in-string
+  		     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+  		     crm-separator)
+  		    (car args))
+  	    (cdr args)))
     (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
     ;; Do not allow the cursor in the minibuffer prompt
     (setq minibuffer-prompt-properties
-	  '(read-only t cursor-intangible t face minibuffer-prompt))
+  	  '(read-only t cursor-intangible t face minibuffer-prompt))
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+
+
+  (use-package vertico
+    :ensure t
+    ;; :custom
+    ;; (vertico-scroll-margin 0) ;; Different scroll margin
+    ;; (vertico-count 20) ;; Show more candidates
+    ;; (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
+    ;; (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+    :init
+    (vertico-mode))
 
   (use-package orderless
     :ensure t
@@ -300,7 +333,7 @@ Configurations for frames go here
     ;; available in the *Completions* buffer, add it to the
     ;; `completion-list-mode-map'.
     :bind (:map minibuffer-local-map
-		("M-A" . marginalia-cycle))
+  		("M-A" . marginalia-cycle))
 
     ;; The :init section is always executed.
     :init
@@ -318,57 +351,57 @@ Configurations for frames go here
     :ensure t
     ;; Replace bindings. Lazily loaded by `use-package'.
     :bind (;; C-c bindings in `mode-specific-map'
-	   ("C-c M-x" . consult-mode-command)
-	   ("C-c h" . consult-history)
-	   ("C-c k" . consult-kmacro)
-	   ("C-c m" . consult-man)
-	   ("C-c i" . consult-info)
-	   ([remap Info-search] . consult-info)
-	   ;; C-x bindings in `ctl-x-map'
-	   ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-	   ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-	   ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-	   ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-	   ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
-	   ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-	   ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-	   ;; Custom M-# bindings for fast register access
-	   ("M-#" . consult-register-load)
-	   ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-	   ("C-M-#" . consult-register)
-	   ;; Other custom bindings
-	   ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-	   ;; M-g bindings in `goto-map'
-	   ("M-g e" . consult-compile-error)
-	   ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-	   ("M-g g" . consult-goto-line)             ;; orig. goto-line
-	   ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-	   ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-	   ("M-g m" . consult-mark)
-	   ("M-g k" . consult-global-mark)
-	   ("M-g i" . consult-imenu)
-	   ("M-g I" . consult-imenu-multi)
-	   ;; M-s bindings in `search-map'
-	   ("M-s d" . consult-find)                  ;; Alternative: consult-fd
-	   ("M-s c" . consult-locate)
-	   ("M-s g" . consult-grep)
-	   ("M-s G" . consult-git-grep)
-	   ("M-s r" . consult-ripgrep)
-	   ("M-s l" . consult-line)
-	   ("M-s L" . consult-line-multi)
-	   ("M-s k" . consult-keep-lines)
-	   ("M-s u" . consult-focus-lines)
-	   ;; Isearch integration
-	   ("M-s e" . consult-isearch-history)
-	   :map isearch-mode-map
-	   ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-	   ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-	   ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-	   ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-	   ;; Minibuffer history
-	   :map minibuffer-local-map
-	   ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-	   ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+  	   ("C-c M-x" . consult-mode-command)
+  	   ("C-c h" . consult-history)
+  	   ("C-c k" . consult-kmacro)
+  	   ("C-c m" . consult-man)
+  	   ("C-c i" . consult-info)
+  	   ([remap Info-search] . consult-info)
+  	   ;; C-x bindings in `ctl-x-map'
+  	   ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+  	   ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+  	   ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+  	   ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+  	   ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+  	   ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+  	   ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+  	   ;; Custom M-# bindings for fast register access
+  	   ("M-#" . consult-register-load)
+  	   ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+  	   ("C-M-#" . consult-register)
+  	   ;; Other custom bindings
+  	   ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+  	   ;; M-g bindings in `goto-map'
+  	   ("M-g e" . consult-compile-error)
+  	   ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+  	   ("M-g g" . consult-goto-line)             ;; orig. goto-line
+  	   ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+  	   ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+  	   ("M-g m" . consult-mark)
+  	   ("M-g k" . consult-global-mark)
+  	   ("M-g i" . consult-imenu)
+  	   ("M-g I" . consult-imenu-multi)
+  	   ;; M-s bindings in `search-map'
+  	   ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+  	   ("M-s c" . consult-locate)
+  	   ("M-s g" . consult-grep)
+  	   ("M-s G" . consult-git-grep)
+  	   ("M-s r" . consult-ripgrep)
+  	   ("M-s l" . consult-line)
+  	   ("M-s L" . consult-line-multi)
+  	   ("M-s k" . consult-keep-lines)
+  	   ("M-s u" . consult-focus-lines)
+  	   ;; Isearch integration
+  	   ("M-s e" . consult-isearch-history)
+  	   :map isearch-mode-map
+  	   ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+  	   ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+  	   ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+  	   ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+  	   ;; Minibuffer history
+  	   :map minibuffer-local-map
+  	   ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+  	   ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
     ;; Enable automatic preview at point in the *Completions* buffer. This is
     ;; relevant when you use the default completion UI.
@@ -386,7 +419,7 @@ Configurations for frames go here
 
     ;; Use Consult to select xref locations with preview
     (setq xref-show-xrefs-function #'consult-xref
-	  xref-show-definitions-function #'consult-xref)
+  	  xref-show-definitions-function #'consult-xref)
 
     ;; Configure other variables and modes in the :config section,
     ;; after lazily loading the package.
@@ -434,9 +467,9 @@ Configurations for frames go here
     :config
     ;; Hide the mode line of the Embark live/completions buffers
     (add-to-list 'display-buffer-alist
-		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		   nil
-		   (window-parameters (mode-line-format . nil))))) ;; none
+  		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+  		   nil
+  		   (window-parameters (mode-line-format . nil))))) ;; none
 
   ;; Consult users will also want the embark-consult package.
   (use-package embark-consult
@@ -465,12 +498,12 @@ Configurations for frames go here
     ;; (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
     (dirvish-override-dired-mode)
     (setq dirvish-mode-line-format
-	  '(:left (sort symlink) :right (omit yank index)))
+  	  '(:left (sort symlink) :right (omit yank index)))
     (setq dirvish-attributes
-	  '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
+  	  '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
     (setq delete-by-moving-to-trash t)
     (setq dired-listing-switches
-	  "-l --almost-all --human-readable --group-directories-first --no-group")
+  	  "-l --almost-all --human-readable --group-directories-first --no-group")
     :bind	     ; Bind `dirvish|dirvish-side|dirvish-dwim' as you see fit
     (("C-c f" . dirvish-fd)
      :map dirvish-mode-map	   ; Dirvish inherits `dired-mode-map'
@@ -492,12 +525,6 @@ Configurations for frames go here
      ("M-e" . dirvish-emerge-menu)
      ("M-j" . dirvish-fd-jump)))
 
-  (use-package dired-x
-    :config
-    ;; Make dired-omit-mode hide all "dotfiles"
-    (setq dired-omit-files
-	  (concat dired-omit-files "\\|^\\..*$")))
-
 #+END_SRC
 
 * Theme
@@ -507,16 +534,17 @@ Configurations for frames go here
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package doom-themes)
+    (use-package doom-themes
+      :ensure t)
 
-  (use-package circadian
-    :ensure t
-    :config
-    (setq calendar-latitude 44.162758)
-    (setq calendar-longitude -77.383232)
-    (setq circadian-themes '((:sunrise . doom-moonlight)
-                             (:sunset  . doom-monokai-pro)))
-    (circadian-setup))
+    (use-package circadian
+      :ensure t
+      :config
+      (setq calendar-latitude 44.162758)
+      (setq calendar-longitude -77.383232)
+      (setq circadian-themes '((:sunrise . doom-moonlight)
+                               (:sunset  . doom-monokai-pro)))
+      (circadian-setup))
 
 #+END_SRC
 
@@ -525,121 +553,123 @@ Configurations for frames go here
 
 #+BEGIN_SRC emacs-lisp
 
+    (use-package lsp-mode
+      :diminish "LSP"
+      :ensure t
+      :hook ((lsp-mode . lsp-diagnostics-mode)
+             (lsp-mode . lsp-enable-which-key-integration)
+             ((tsx-ts-mode
+               typescript-ts-mode
+               js-ts-mode) . lsp-deferred))
+      :custom
+      (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
+      (lsp-diagnostics-provider :flycheck)
+      (lsp-session-file (locate-user-emacs-file ".lsp-session"))
+      (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
+      (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
+      (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
+      ;; core
+      (lsp-enable-xref t)                   ; Use xref to find references
+      (lsp-auto-configure t)                ; Used to decide between current active servers
+      (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
+      ;;(lsp-enable-dap-auto-configure t)     ; Debug support
+      (lsp-enable-file-watchers nil)
+      (lsp-enable-folding nil)              ; I disable folding since I use hideshow
+      (lsp-enable-imenu t)
+      (lsp-enable-indentation nil)          ; I use prettier
+      (lsp-enable-links nil)                ; No need since we have `browse-url'
+      (lsp-enable-on-type-formatting nil)   ; Prettier handles this
+      (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
+      (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
+      (lsp-enable-text-document-color nil)   ; This is Treesitter's job
+
+      (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
+      (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
+      ;; completion
+      (lsp-completion-enable t)
+      (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
+      (lsp-enable-snippet t)                         ; Important to provide full JSX completion
+      (lsp-completion-show-kind t)                   ; Optional
+      ;; headerline
+      (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
+      (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
+      (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
+      (lsp-headerline-breadcrumb-icons-enable nil)
+      ;; modeline
+      (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
+      (lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
+      (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
+      ;;(lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
+      ;;(lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
+      (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
+      ;; lens
+      ;;(lsp-lens-enable nil)                 ; Optional, I don't need it
+      ;; semantic
+      (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
+
+      :init
+      (setq lsp-use-plists t))
+
+
+    (use-package lsp-ui
+      :ensure t
+      :commands
+      (lsp-ui-doc-show
+       lsp-ui-doc-glance)
+      :bind (:map lsp-mode-map
+          	("C-c C-d" . 'lsp-ui-doc-glance))
+      :after (lsp-mode) ;; evil
+      :config (setq lsp-ui-doc-enable t
+          	  ;; evil-lookup-func #'lsp-ui-doc-glance ; Makes K in evil-mode toggle the doc for symbol at point
+          	  lsp-ui-doc-show-with-cursor nil      ; Don't show doc when cursor is over symbol - too distracting
+          	  lsp-ui-doc-include-signature t       ; Show signature
+          	  lsp-ui-doc-position 'at-point)
+      ;; lsp-booster: to prevent UI freezes
+      :preface
+      (defun lsp-booster--advice-json-parse (old-fn &rest args)
+        "Try to parse bytecode instead of json."
+        (or
+         (when (equal (following-char) ?#)
+
+           (let ((bytecode (read (current-buffer))))
+             (when (byte-code-function-p bytecode)
+               (funcall bytecode))))
+         (apply old-fn args)))
+
+      (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+        "Prepend emacs-lsp-booster command to lsp CMD."
+        (let ((orig-result (funcall old-fn cmd test?)))
+          (if (and (not test?)                             ;; for check lsp-server-present?
+          	 (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+          	 lsp-use-plists
+          	 (not (functionp 'json-rpc-connection))  ;; native json-rpc
+          	 (executable-find "emacs-lsp-booster"))
+              (progn
+                (message "Using emacs-lsp-booster for %s!" orig-result)
+                (cons "emacs-lsp-booster" orig-result))
+            orig-result)))
+      
+      :init
+      (setq lsp-use-plists t)
+      ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
+      (advice-add (if (progn (require 'json)
+          		   (fboundp 'json-parse-buffer))
+          	    'json-parse-buffer
+          	  'json-read)
+          	:around
+          	#'lsp-booster--advice-json-parse)
+      (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+
+    (with-eval-after-load 'lsp-mode
+      (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+      (yas-global-mode))
+
+  ;  (use-package lsp-eslint
+  ;    :demand t
+  ;    :after lsp-mode)
+
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
   (add-hook 'prog-mode-hook #'lsp)
-
-  (use-package lsp-mode
-    :diminish "LSP"
-    :ensure t
-    :hook ((lsp-mode . lsp-diagnostics-mode)
-           (lsp-mode . lsp-enable-which-key-integration)
-           ((tsx-ts-mode
-             typescript-ts-mode
-             js-ts-mode) . lsp-deferred))
-    :custom
-    (lsp-keymap-prefix "C-c l")           ; Prefix for LSP actions
-    (lsp-diagnostics-provider :flycheck)
-    (lsp-session-file (locate-user-emacs-file ".lsp-session"))
-    (lsp-log-io nil)                      ; IMPORTANT! Use only for debugging! Drastically affects performance
-    (lsp-keep-workspace-alive nil)        ; Close LSP server if all project buffers are closed
-    (lsp-idle-delay 0.5)                  ; Debounce timer for `after-change-function'
-    ;; core
-    (lsp-enable-xref t)                   ; Use xref to find references
-    (lsp-auto-configure t)                ; Used to decide between current active servers
-    (lsp-eldoc-enable-hover t)            ; Display signature information in the echo area
-    ;;(lsp-enable-dap-auto-configure t)     ; Debug support
-    (lsp-enable-file-watchers nil)
-    (lsp-enable-folding nil)              ; I disable folding since I use hideshow
-    (lsp-enable-imenu t)
-    (lsp-enable-indentation nil)          ; I use prettier
-    (lsp-enable-links nil)                ; No need since we have `browse-url'
-    (lsp-enable-on-type-formatting nil)   ; Prettier handles this
-    (lsp-enable-suggest-server-download t) ; Useful prompt to download LSP providers
-    (lsp-enable-symbol-highlighting t)     ; Shows usages of symbol at point in the current buffer
-    (lsp-enable-text-document-color nil)   ; This is Treesitter's job
-
-    (lsp-ui-sideline-show-hover nil)      ; Sideline used only for diagnostics
-    (lsp-ui-sideline-diagnostic-max-lines 20) ; 20 lines since typescript errors can be quite big
-    ;; completion
-    (lsp-completion-enable t)
-    (lsp-completion-enable-additional-text-edit t) ; Ex: auto-insert an import for a completion candidate
-    (lsp-enable-snippet t)                         ; Important to provide full JSX completion
-    (lsp-completion-show-kind t)                   ; Optional
-    ;; headerline
-    (lsp-headerline-breadcrumb-enable t)  ; Optional, I like the breadcrumbs
-    (lsp-headerline-breadcrumb-enable-diagnostics nil) ; Don't make them red, too noisy
-    (lsp-headerline-breadcrumb-enable-symbol-numbers nil)
-    (lsp-headerline-breadcrumb-icons-enable nil)
-    ;; modeline
-    (lsp-modeline-code-actions-enable nil) ; Modeline should be relatively clean
-    (lsp-modeline-diagnostics-enable nil)  ; Already supported through `flycheck'
-    (lsp-modeline-workspace-status-enable nil) ; Modeline displays "LSP" when lsp-mode is enabled
-    ;;(lsp-signature-doc-lines 1)                ; Don't raise the echo area. It's distracting
-    ;;(lsp-ui-doc-use-childframe t)              ; Show docs for symbol at point
-    (lsp-eldoc-render-all nil)            ; This would be very useful if it would respect `lsp-signature-doc-lines', currently it's distracting
-    ;; lens
-    ;;(lsp-lens-enable nil)                 ; Optional, I don't need it
-    ;; semantic
-    (lsp-semantic-tokens-enable nil)      ; Related to highlighting, and we defer to treesitter
-
-    :init
-    (setq lsp-use-plists t))
-
-  (use-package lsp-ui
-    :ensure t
-    :commands
-    (lsp-ui-doc-show
-     lsp-ui-doc-glance)
-    :bind (:map lsp-mode-map
-        	("C-c C-d" . 'lsp-ui-doc-glance))
-    :after (lsp-mode) ;; evil
-    :config (setq lsp-ui-doc-enable t
-        	  ;; evil-lookup-func #'lsp-ui-doc-glance ; Makes K in evil-mode toggle the doc for symbol at point
-        	  lsp-ui-doc-show-with-cursor nil      ; Don't show doc when cursor is over symbol - too distracting
-        	  lsp-ui-doc-include-signature t       ; Show signature
-        	  lsp-ui-doc-position 'at-point)
-    ;; lsp-booster: to prevent UI freezes
-    :preface
-    (defun lsp-booster--advice-json-parse (old-fn &rest args)
-      "Try to parse bytecode instead of json."
-      (or
-       (when (equal (following-char) ?#)
-
-         (let ((bytecode (read (current-buffer))))
-           (when (byte-code-function-p bytecode)
-             (funcall bytecode))))
-       (apply old-fn args)))
-
-    (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-      "Prepend emacs-lsp-booster command to lsp CMD."
-      (let ((orig-result (funcall old-fn cmd test?)))
-        (if (and (not test?)                             ;; for check lsp-server-present?
-        	 (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-        	 lsp-use-plists
-        	 (not (functionp 'json-rpc-connection))  ;; native json-rpc
-        	 (executable-find "emacs-lsp-booster"))
-            (progn
-              (message "Using emacs-lsp-booster for %s!" orig-result)
-              (cons "emacs-lsp-booster" orig-result))
-          orig-result)))
-    
-    :init
-    (setq lsp-use-plists t)
-    ;; Initiate https://github.com/blahgeek/emacs-lsp-booster for performance
-    (advice-add (if (progn (require 'json)
-        		   (fboundp 'json-parse-buffer))
-        	    'json-parse-buffer
-        	  'json-read)
-        	:around
-        	#'lsp-booster--advice-json-parse)
-    (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
-
-  (with-eval-after-load 'lsp-mode
-    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-    (yas-global-mode))
-
-  (use-package lsp-eslint
-    :demand t
-    :after lsp-mode)
 
 #+END_SRC
 
@@ -682,10 +712,10 @@ Configurations for frames go here
 #+END_SRC
 
 *** Folding
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package hideshow ; built-in
+    :straight t
     :commands (hs-cycle
                hs-global-cycle)
     :bind (:map prog-mode-map
@@ -775,36 +805,11 @@ Configurations for frames go here
 
 #+END_SRC
 
-** Shell
-*** Completion
-Over tramp completion is very slow, native-complete will save the day/week/year.
-
-#+BEGIN_SRC emacs-lisp
-
-  (defun shell-mode-hook-setup ()
-    "Set up `shell-mode'."
-
-    (setq-local company-backends '((company-files company-native-complete)))
-    ;; `company-native-complete' is better than `completion-at-point'
-    (local-set-key (kbd "TAB") 'company-complete)
-
-    ;; @see https://github.com/redguardtoo/emacs.d/issues/882
-    (setq-local company-idle-delay 1)
-
-    ;; prevent company-mode in remote buffers
-    (when (file-remote-p default-directory)
-      (company-mode -1)))
-  
-  (add-hook 'eshell-mode-hook 'shell-mode-hook-setup)
-  (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
-
-#+END_SRC
-
 ** Elm
 #+BEGIN_SRC emacs-lisp
 
-    (use-package elm-mode
-      :ensure t)
+  (use-package elm-mode
+    :ensure t)
 
 #+END_SRC
 
@@ -815,6 +820,19 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
     :ensure t
     :init
     (elpy-enable))
+
+  (use-package pyvenv
+    :ensure t
+    :config
+    (setq pyvenv-mode-line-indicator "(venv)")
+    (pyvenv-mode 1)
+    (pyvenv-tracking-mode 1)
+    (setq pyvenv-post-activate-hooks
+  	(list (lambda ()
+  		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+    (setq pyvenv-post-deactivate-hooks
+  	(list (lambda ()
+  		(setq python-shell-interpreter "python3")))))
 
   (use-package python-mode
     :ensure t
@@ -958,13 +976,19 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 * Org
 #+BEGIN_SRC emacs-lisp
 
+  (use-package org
+    :mode ("\\.org\\'" . org-mode)
+    :config
+    (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
+  (setq verb-auto-kill-response-buffers 10)
+
   (use-package org-contrib
     :ensure t)
 
-  (require 'ob-oz)
+  ;(require 'ob-oz)
 
   (use-package ob-racket
-    :after org
     :config
     (add-hook 'ob-racket-pre-runtime-library-load-hook
   	      #'ob-racket-raco-make-runtime-library)
@@ -974,28 +998,18 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
 
 #+END_SRC
 
-* Writing
-** Markdown
+** API Client: Verb
 #+BEGIN_SRC emacs-lisp
 
-  (use-package markdown-mode
-    :straight t)
+  (use-package verb)
 
 #+END_SRC
 
-** Food Recipes
-#+BEGIN_SRC emacs-lisp
-
-  (use-package org-chef
-    :ensure t)
-
-#+END_SRC
-
-** NoteTaking
+** NoteTaking: Org Roam
 #+BEGIN_SRC emacs-lisp
 
   (use-package org-roam
-    :ensure t
+    :straight t
     :init (setq org-roam-v2-ack t)
     :custom
     (org-roam-directory "~/RoamNotes/")
@@ -1035,14 +1049,6 @@ Over tramp completion is very slow, native-complete will save the day/week/year.
     (require 'org-roam-dailies)
     (org-roam-db-autosync-mode))
 
-
-  (defun new-note ()
-    "Spawn a new buffer for note taking."
-    (interactive)
-    (switch-to-buffer (generate-new-buffer "*note*"))
-    (text-mode)
-    (insert-in-buffer "*note*" "New Note"))
-
 #+END_SRC
 
 * AI/LLM Integration
@@ -1053,27 +1059,18 @@ Using gptel for integration with LLM tools.
 
 #+BEGIN_SRC emacs-lisp
 
-   (use-package gptel
-     :ensure t)
+  (elpaca gptel)
      
    (setq gptel-api-key
          (read-env-variable "OPENAI_API_KEY"))
 
-   (gptel-make-anthropic "Claude"
-     :stream t
-     :key (read-env-variable "CLAUDE_API_KEY"))
+;  (setq
+;   gptel-model 'gemini-2.0-flash-exp
+;   gptel-backend (gptel-make-gemini "Gemini"
+;                   :key (read-env-variable "GEMINI_API_KEY")
+;                   :stream t))
 
-   (gptel-make-deepseek "DeepSeek"
-     :stream t
-     :key (read-env-variable "DEEPSEEK_API_KEY"))
-
-  (setq
-   gptel-model 'gemini-2.0-flash-exp
-   gptel-backend (gptel-make-gemini "Gemini"
-                   :key (read-env-variable "GEMINI_API_KEY")
-                   :stream t))
-
-#+END_SRC
+ #+END_SRC
 
 * Mail
 ** Notmuch
