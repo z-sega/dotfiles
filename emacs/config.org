@@ -7,74 +7,11 @@
 [[https://ryan.himmelwright.net/post/org-babel-setup/][Ryan Himmelwright's Org-Babel Emacs Config]]
 
 * Package Management
-
 ** Package Repositories
 Not compatible with elpaca
 
-#+BEGIN_SRC emacs-lisp
-
-  ;(require 'package)
-  ;(setq package-archives
-  ;      '(("gnu" . "https://elpa.gnu.org/packages/")
-  ;        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-  ;        ("melpa" . "https://melpa.org/packages/")))
-  ;(package-initialize)
-
-  (setq use-package-always-ensure t)
-
-
-#+END_SRC
-
 ** Setup Elpaca
-Not compatible with package
-
-#+BEGIN_SRC emacs-lisp
-
-    (defvar elpaca-installer-version 0.11)
-    (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-    (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-    (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-    (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                                  :ref nil :depth 1 :inherit ignore
-                                  :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                                  :build (:not elpaca--activate-package)))
-    (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-           (build (expand-file-name "elpaca/" elpaca-builds-directory))
-           (order (cdr elpaca-order))
-           (default-directory repo))
-      (add-to-list 'load-path (if (file-exists-p build) build repo))
-      (unless (file-exists-p repo)
-        (make-directory repo t)
-        (when (<= emacs-major-version 28) (require 'subr-x))
-        (condition-case-unless-debug err
-            (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                      ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                      ,@(when-let* ((depth (plist-get order :depth)))
-                                                          (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                      ,(plist-get order :repo) ,repo))))
-                      ((zerop (call-process "git" nil buffer t "checkout"
-                                            (or (plist-get order :ref) "--"))))
-                      (emacs (concat invocation-directory invocation-name))
-                      ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                            "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                      ((require 'elpaca))
-                      ((elpaca-generate-autoloads "elpaca" repo)))
-                (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-              (error "%s" (with-current-buffer buffer (buffer-string))))
-          ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-      (unless (require 'elpaca-autoloads nil t)
-        (require 'elpaca)
-        (elpaca-generate-autoloads "elpaca" repo)
-        (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-    (add-hook 'after-init-hook #'elpaca-process-queues)
-    (elpaca `(,@elpaca-order))
-
-  ;; Install use-package support
-  (elpaca elpaca-use-package
-    ;; Enable use-package :ensure support for Elpaca.
-    (elpaca-use-package-mode))
-
-#+END_SRC
+Check the init.el for standard Elpaca bootstrap.
 
 ** Setup Straight
 #+BEGIN_SRC emacs-lisp
@@ -805,6 +742,22 @@ Configurations for frames go here
 
 #+END_SRC
 
+** Java
+#+BEGIN_SRC emacs-lisp
+
+  (use-package lsp-java
+    :after lsp)
+
+  (add-hook 'java-mode-hook #'lsp)
+
+  (use-package dap-mode
+      :after lsp-mode
+      :config
+      (dap-auto-configure-mode))
+
+
+#+END_SRC
+
 ** Elm
 #+BEGIN_SRC emacs-lisp
 
@@ -816,30 +769,35 @@ Configurations for frames go here
 ** Python
 #+BEGIN_SRC emacs-lisp
 
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable))
+      (use-package elpy
+        :ensure t
+        :init
+        (elpy-enable))
 
-  (use-package pyvenv
-    :ensure t
-    :config
-    (setq pyvenv-mode-line-indicator "(venv)")
-    (pyvenv-mode 1)
-    (pyvenv-tracking-mode 1)
-    (setq pyvenv-post-activate-hooks
-  	(list (lambda ()
-  		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
-    (setq pyvenv-post-deactivate-hooks
-  	(list (lambda ()
-  		(setq python-shell-interpreter "python3")))))
+      (use-package pyvenv
+        :ensure t
+        :config
+        (setq pyvenv-mode-line-indicator "(venv)")
+        (pyvenv-mode 1)
+        (pyvenv-tracking-mode 1)
+        (setq pyvenv-post-activate-hooks
+      	(list (lambda ()
+      		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+        (setq pyvenv-post-deactivate-hooks
+      	(list (lambda ()
+      		(setq python-shell-interpreter "python3"))))) 
 
-  (use-package python-mode
-    :ensure t
-    :hook 
-    ((python-mode . lsp-deferred)
-     (python-mode . elpy-mode))
-    :custom (python-shell-interpreter "python3"))
+      (use-package python-mode
+        :ensure t
+        :hook 
+        ((python-mode . lsp-deferred)
+         (python-mode . elpy-mode))
+        :custom (python-shell-interpreter "python3"))
+
+
+      (use-package djangonaut
+        :config
+        (global-djangonaut-mode 1))
 
 #+END_SRC
 
@@ -896,26 +854,8 @@ Configurations for frames go here
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package web-mode
-    :after (add-node-modules-path)
-    :ensure t
-    :mode (("\\.js\\'" . web-mode)
-	   ("\\.jsx\\'" . web-mode)
-	   ("\\.ts\\'" . web-mode)
-	   ("\\.tsx\\'" . web-mode)
-	   ("\\.html\\'" . web-mode))
-    :config
-    (setq web-mode-markup-indent-offset 2
-	  web-mode-code-indent-offset 2
-	  web-mode-css-indent-offset 2
-	  web-mode-enable-auto-closing t
-	  web-mode-enable-auto-opening t
-	  web-mode-enable-auto-pairing t
-	  web-mode-enable-auto-indentation t
-	  web-mode-enable-auto-quoting t
-	  web-mode-enable-current-column-highlight t
-	  web-mode-enable-current-element-highlight t)
-    :commands web-mode)
+  (use-package emmet-mode
+      :hook ((html-mode) . emmet-mode))
 
 #+END_SRC
 
@@ -976,13 +916,6 @@ Configurations for frames go here
 * Org
 #+BEGIN_SRC emacs-lisp
 
-  (use-package org
-    :mode ("\\.org\\'" . org-mode)
-    :config
-    (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
-
-  (setq verb-auto-kill-response-buffers 10)
-
   (use-package org-contrib
     :ensure t)
 
@@ -1001,7 +934,12 @@ Configurations for frames go here
 ** API Client: Verb
 #+BEGIN_SRC emacs-lisp
 
-  (use-package verb)
+  (use-package verb
+    :ensure t
+    :config
+    (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
+    (setq verb-auto-kill-response-buffers 10))
+
 
 #+END_SRC
 
