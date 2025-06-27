@@ -15,18 +15,18 @@ Check the init.el for standard Elpaca bootstrap.
 
 ** Setup Straight
 #+BEGIN_SRC emacs-lisp
-  
+
   (defvar bootstrap-version)
   (let ((bootstrap-file
-	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	(bootstrap-version 5))
+  	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+  	(bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
-	  (url-retrieve-synchronously
-	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	   'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-sexp)))
+  	  (url-retrieve-synchronously
+  	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+  	   'silent 'inhibit-cookies)
+  	(goto-char (point-max))
+  	(eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 
 #+END_SRC
@@ -58,13 +58,63 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 *** Completion
-
+**** Company
 #+BEGIN_SRC emacs-lisp
 
-  (use-package company
-     :ensure t
-     :init
-     (global-company-mode))
+  ;(use-package company
+  ;   :ensure t
+  ;   :init
+  ;   (global-company-mode))
+
+#+END_SRC
+
+**** Corfu
+#+BEGIN_SRC emacs-lisp
+
+  (use-package corfu
+    :ensure (:files (:defaults "extensions/*"))
+    :demand t                      ; need this when using :bind or :hook
+    :config
+    (global-corfu-mode 1)
+    :custom
+    (corfu-auto t)
+    (corfu-auto-delay 0.75)
+    (corfu-quit-no-match t) ; quit when the popup appears and I type anything else
+    ;; Might want to customize corfu-sort-function
+    :bind
+    (("M-RET" . completion-at-point)))
+
+  ;; corfu extension (in corfu/extensions/corfu-history.el); load after corfu
+  (use-package corfu-history
+    :ensure nil
+    :after corfu
+    :config
+    (corfu-history-mode)
+    (savehist-mode 1)
+    (add-to-list 'savehist-additional-variables 'corfu-history))
+
+  (use-package corfu-terminal
+    :after corfu
+    :init
+    (defvar corfu-terminal-mode)
+    ;; TODO set this up, for use in non-GUI emacs
+    )
+
+  ;; Additional capf completion sources
+  (use-package cape
+    :config
+    ;; Note: order matters here. First one returning a result wins. Use
+    ;; ~add-hook~ to add these, since it sets the global (default) value
+    ;; of capf, instead of ~setq~ which would make it buffer-local
+    ;; (which would be bad): capf is automatically buffer-local when
+    ;; set.
+    ;; The buffer-local value, which takes precedence over these, calls these as long
+    ;; as it ends with ~t~.
+    (add-hook 'completion-at-point-functions #'cape-history)
+    (add-hook 'completion-at-point-functions #'cape-file)
+    (add-hook 'completion-at-point-functions #'cape-keyword)
+    (add-hook 'completion-at-point-functions #'cape-dabbrev)
+    (message (format "Loading my capf extensions: %s" completion-at-point-functions)))
 
 #+END_SRC
 
@@ -504,9 +554,7 @@ Configurations for frames go here
 * Training
 #+BEGIN_SRC emacs-lisp
 
-  (use-package speed-type
-    :config
-    (company-mode nil))
+  (use-package speed-type)
 
 #+END_SRC
 
@@ -993,7 +1041,8 @@ Ensure =brew install gnu-sed=
 
   (use-package tide
     :ensure t
-    :after (company flycheck)
+    ;:after (company flycheck)    
+    :after (corfu flycheck)
     :hook ((typescript-ts-mode . tide-setup)
     	 (tsx-ts-mode . tide-setup)
     	 (typescript-ts-mode . tide-hl-identifier-mode)
@@ -1006,13 +1055,11 @@ Ensure =brew install gnu-sed=
     (setq flycheck-check-syntax-automatically '(save mode-enabled))
     (eldoc-mode +1)
     (tide-hl-identifier-mode +1)
-    ;; company is an optional dependency. You have to
-    ;; install it separately via package-install
-    ;; `M-x package-install [ret] company`
-    (company-mode +1))
+    ;(company-mode +1)
+    )
 
   ;; aligns annotation to the right hand side
-  (setq company-tooltip-align-annotations t)
+  ; (setq company-tooltip-align-annotations t)
 
   ;; formats the buffer before saving
   (add-hook 'before-save-hook 'tide-format-before-save)
@@ -1031,8 +1078,8 @@ Ensure =brew install gnu-sed=
 
   (setq gc-cons-threshold (* 100 1024 1024)
 	read-process-output-max (* 1024 1024)
-	company-idle-delay 0.0
-	company-minimum-prefix-length 1
+	;company-idle-delay 0.0
+	;company-minimum-prefix-length 1
 	create-lockfiles nil)
 
   (with-eval-after-load 'js
