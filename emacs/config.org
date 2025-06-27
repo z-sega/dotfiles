@@ -123,6 +123,14 @@ Check the init.el for standard Elpaca bootstrap.
 
 #+END_SRC
 
+*** Keyboard Menus
+#+BEGIN_SRC emacs-lisp
+
+  (use-package transient
+    :ensure t)
+
+#+END_SRC
+
 * Start-up Options
 ** Splash Screen
 #+BEGIN_SRC emacs-lisp
