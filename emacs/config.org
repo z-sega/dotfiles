@@ -944,11 +944,6 @@ Ensure =brew install gnu-sed=
 ** Python
 #+BEGIN_SRC emacs-lisp
 
-      (use-package elpy
-        :ensure t
-        :init
-        (elpy-enable))
-
       (use-package pyvenv
         :ensure t
         :config
@@ -960,15 +955,13 @@ Ensure =brew install gnu-sed=
       		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
         (setq pyvenv-post-deactivate-hooks
       	(list (lambda ()
-      		(setq python-shell-interpreter "python3"))))) 
+      		(setq python-shell-interpreter "python3")))))
 
       (use-package python-mode
         :ensure t
         :hook 
-        ((python-mode . lsp-deferred)
-         (python-mode . elpy-mode))
+        ((python-mode . lsp-deferred))
         :custom (python-shell-interpreter "python3"))
-
 
       (use-package djangonaut
         :config
@@ -1175,16 +1168,20 @@ Using gptel for integration with LLM tools.
 
 #+BEGIN_SRC emacs-lisp
 
-  (elpaca gptel)
-     
-   (setq gptel-api-key
-         (read-env-variable "OPENAI_API_KEY"))
+    (elpaca gptel)
+         
+    (setq gptel-api-key
+          (read-env-variable "OPENAI_API_KEY"))
 
-;  (setq
-;   gptel-model 'gemini-2.0-flash-exp
-;   gptel-backend (gptel-make-gemini "Gemini"
-;                   :key (read-env-variable "GEMINI_API_KEY")
-;                   :stream t))
+    (setq gptel-model 'deepseek-reasoner
+          gptel-backend (gptel-make-deepseek "DeepSeek"
+    		      :stream t
+    		      :key (read-env-variable "DEEPSEEK_API_KEY")))
+
+  (setq gptel-default-mode 'org-mode)
+  (setq gptel-org-branching-context t)
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
 
  #+END_SRC
 
