@@ -1168,20 +1168,19 @@ Using gptel for integration with LLM tools.
 
 #+BEGIN_SRC emacs-lisp
 
-    (elpaca gptel)
-         
-    (setq gptel-api-key
-          (read-env-variable "OPENAI_API_KEY"))
-
-    (setq gptel-model 'deepseek-reasoner
-          gptel-backend (gptel-make-deepseek "DeepSeek"
-    		      :stream t
-    		      :key (read-env-variable "DEEPSEEK_API_KEY")))
-
-  (setq gptel-default-mode 'org-mode)
-  (setq gptel-org-branching-context t)
-  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
-  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
+  (use-package gptel
+    :config
+    (setq gptel-default-mode 'org-mode)
+          (setq gptel-org-branching-context t)
+          (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
+          (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
+          (setq gptel-model 'deepseek-reasoner
+  	      gptel-backend (gptel-make-deepseek "DeepSeek"
+  			      :stream t
+  			      :key (read-env-variable "DEEPSEEK_API_KEY"))))
+           
+  ;    (setq gptel-api-key
+  ;          (read-env-variable "OPENAI_API_KEY"))
 
  #+END_SRC
 
@@ -1205,3 +1204,10 @@ Using gptel for integration with LLM tools.
 
 ** mu4e
 [[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
+* Misc
+** Fireplace
+#+BEGIN_SRC emacs-lisp
+
+  (use-package fireplace)
+
+#+END_SRC
