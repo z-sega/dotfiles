@@ -1207,6 +1207,13 @@ Using gptel for integration with LLM tools.
 ** mu4e
 [[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
 * Misc
+** Communication 
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ement)
+
+#+END_SRC
+
 ** Fireplace
 #+BEGIN_SRC emacs-lisp
 
