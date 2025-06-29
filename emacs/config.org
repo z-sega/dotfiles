@@ -721,6 +721,8 @@ Ensure =brew install gnu-sed=
 ** Utilities
 #+BEGIN_SRC emacs-lisp
 
+  (use-package nhexl-mode)
+
   (use-package exec-path-from-shell
      :ensure t
      :config (exec-path-from-shell-initialize))
