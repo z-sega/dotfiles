@@ -32,19 +32,6 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 ** Packages
-*** Autocorrect
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode)
-    :bind (:map flycheck-mode-map
-                ("M-n" . flycheck-next-error)
-                ("M-p" . flycheck-previous-error)))
-
-#+END_SRC
-
 *** Snippets
 
 #+BEGIN_SRC emacs-lisp
@@ -119,7 +106,6 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 *** Formatting
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package blacken
@@ -141,16 +127,14 @@ Check the init.el for standard Elpaca bootstrap.
           '("prettier" "--stdin-filepath" filepath))
     (setf (alist-get 'prettier apheleia-formatters)
           '("prettier" "--stdin-filepath" filepath))
-    (setf (alist-get 'prettier apheleia-formatters)
-          '("prettier" "--stdin-filepath" filepath))
     (add-to-list 'apheleia-mode-alist '(typescript-mode . prettier))
     (add-to-list 'apheleia-mode-alist '(web-mode . prettier))
+    (add-to-list 'apheleia-mode-alist '(html-mode . prettier))    
     (apheleia-global-mode +1))
 
 #+END_SRC
 
 *** Ligatures
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package ligature
@@ -192,8 +176,14 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 * Core
-** Autosaves
+** Search
+#+BEGIN_SRC emacs-lisp
 
+  (use-package rg)
+
+#+END_SRC
+
+** Autosaves
 #+BEGIN_SRC emacs-lisp
 
   (setq auto-save-file-name-transforms
@@ -207,7 +197,6 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 ** Backups
-
 #+BEGIN_SRC emacs-lisp
 
   (setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
@@ -220,7 +209,6 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 ** Utilities
 *** Read Variables from .env
-
 #+BEGIN_SRC emacs-lisp
 
   (defun read-env-variable (variable-name)
@@ -235,7 +223,6 @@ Check the init.el for standard Elpaca bootstrap.
 
 * Window Management
 ** Buffers
-
 #+BEGIN_SRC emacs-lisp
 
   (global-set-key [remap list-buffers] 'ibuffer)
@@ -258,7 +245,6 @@ Configurations for frames go here
 
 ** Interactive Search/Do
 *** Vertico, Orderless, Consult, Embark & Prescient
-
 #+BEGIN_SRC emacs-lisp
 
   ;; Persist history over Emacs restarts. Vertico sorts by history position.
@@ -480,6 +466,7 @@ Configurations for frames go here
   (setq insert-directory-program "gls" dired-use-ls-dired t)
   (setq dired-listing-switches "-al --group-directories-first")
   (setf dired-kill-when-opening-new-dired-buffer t)
+  
   (use-package dirvish
     :ensure t
     :custom
@@ -585,6 +572,18 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 * Programming
+** Syntax Checker
+#+BEGIN_SRC emacs-lisp
+
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode)
+    :bind (:map flycheck-mode-map
+                ("M-n" . flycheck-next-error)
+                ("M-p" . flycheck-previous-error)))
+
+#+END_SRC
+
 ** Language Server Protocol
 
 #+BEGIN_SRC emacs-lisp
@@ -709,10 +708,6 @@ Ensure =brew install gnu-sed=
       (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
       (yas-global-mode))
 
-  ;  (use-package lsp-eslint
-  ;    :demand t
-  ;    :after lsp-mode)
-
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
   (add-hook 'prog-mode-hook #'lsp)
 
@@ -755,6 +750,12 @@ Ensure =brew install gnu-sed=
         (js-mode . js-ts-mode)
         (js2-mode . js-ts-mode)
         (python-mode . python-ts-mode)))
+
+#+END_SRC
+*** Logs
+#+BEGIN_SRC emacs-lisp
+
+  (use-package logview)
 
 #+END_SRC
 
@@ -898,6 +899,39 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
+*** Binary Buffers
+#+BEGIN_SRC emacs-lisp
+
+  (defun buffer-binary-p (&optional buffer)
+    "True if BUFFER or the current buffer is binary.
+
+  A binary buffer is defined as containing at least one null byte.
+
+  Returns either nil, or the position of the first null byte."
+    (with-current-buffer (or buffer (current-buffer))
+      (save-excursion
+        (goto-char (point-min))
+        (search-forward (string ?\x00) nil t 1))))
+
+  (defun nhexl-if-binary ()
+    "If `nhexl-mode' is not already active, and the current buffer is binary, activate `nhexl-mode'."
+    (interactive)
+    (unless (eq major-mode 'nhexl-mode)
+      (when (buffer-binary-p)
+        (nhexl-mode))))
+
+  (add-hook 'find-file-hooks 'nhexl-if-binary)
+
+#+END_SRC
+
+*** Environment
+#+BEGIN_SRC emacs-lisp
+
+  (use-package envrc
+    :hook (after-init . envrc-global-mode))
+
+#+END_SRC
+
 ** Rust
 [[https://robert.kra.hn/posts/rust-emacs-setup/][Rob's Rust Emacs Setup]]
 
@@ -944,30 +978,50 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 ** Python
+To ensure direnv works properly, you need the .envrc in every (python)
+project.
+
+#+BEGIN_SRC
+
+  echo "layout python3" > .envrc
+  direnv allow  
+
+#+END_SRC
+
+Also add =.direnv= and =.envrc= to gitignore.
+
+#+BEGIN_SRC
+
+.envrc
+.direnv
+  
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 
-      (use-package pyvenv
-        :ensure t
-        :config
-        (setq pyvenv-mode-line-indicator "(venv)")
-        (pyvenv-mode 1)
-        (pyvenv-tracking-mode 1)
-        (setq pyvenv-post-activate-hooks
-      	(list (lambda ()
-      		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
-        (setq pyvenv-post-deactivate-hooks
-      	(list (lambda ()
-      		(setq python-shell-interpreter "python3")))))
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable))
 
-      (use-package python-mode
-        :ensure t
-        :hook 
-        ((python-mode . lsp-deferred))
-        :custom (python-shell-interpreter "python3"))
+  (use-package pyvenv
+    :ensure t
+    :config
+    (setq pyvenv-mode-line-indicator "(venv)")
+    (pyvenv-mode 1)
+    (pyvenv-tracking-mode 1)
+    (setq pyvenv-post-activate-hooks
+  	(list (lambda ()
+  		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+    (setq pyvenv-post-deactivate-hooks
+  	(list (lambda ()
+  		(setq python-shell-interpreter "python3")))))
 
-      (use-package djangonaut
-        :config
-        (global-djangonaut-mode 1))
+  (use-package python-mode
+    :ensure t
+    :hook 
+    ((python-mode . lsp-deferred))
+    :custom (python-shell-interpreter "python3"))
 
 #+END_SRC
 
@@ -1173,7 +1227,6 @@ Using gptel for integration with LLM tools.
   (use-package gptel
     :config
     (setq gptel-default-mode 'org-mode)
-          (setq gptel-org-branching-context t)
           (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
           (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
           (setq gptel-model 'deepseek-reasoner
