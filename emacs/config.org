@@ -757,6 +757,8 @@ Ensure =brew install gnu-sed=
 
   (use-package logview)
 
+  (add-to-list 'auto-mode-alist '("\\.log\\'" . auto-revert-tail-mode))
+
 #+END_SRC
 
 *** Debugging
@@ -1080,6 +1082,12 @@ Also add =.direnv= and =.envrc= to gitignore.
 
   (use-package emmet-mode
       :hook ((html-mode) . emmet-mode))
+
+  (use-package jinja2-mode)
+
+  (use-package mmm-mode)
+
+  (use-package mmm-jinja2)
 
 #+END_SRC
 
