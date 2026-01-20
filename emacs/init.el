@@ -76,6 +76,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-global-modes nil)
  '(js-indent-level 2)
  '(notmuch-saved-searches
    '((:name "inbox" :query "tag:inbox" :key [105] :sort-order
@@ -90,7 +91,9 @@
 	    newest-first)
      (:name "all mail" :query "*" :key [97] :sort-order newest-first)))
  '(safe-local-variable-values
-   '((python-shell-process-environment
+   '((eval put 'mailer-merge-common-variables 'racket-indent-function
+	   #'begin)
+     (python-shell-process-environment
       "DJANGO_SETTINGS_MODULE=app.settings")
      (python-shell-virtualenv-root . "./venv")
      (python-shell-extra-pythonpaths ".")
@@ -100,3 +103,5 @@
  '(standard-indent 2)
  '(tool-bar-mode nil)
  '(visible-bell t))
+
+(server-start)

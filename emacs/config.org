@@ -752,6 +752,7 @@ Ensure =brew install gnu-sed=
         (python-mode . python-ts-mode)))
 
 #+END_SRC
+
 *** Logs
 #+BEGIN_SRC emacs-lisp
 
@@ -807,6 +808,12 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
+*** Map
+#+BEGIN_SRC emacs-lisp
+
+  (use-package demap)
+
+#+END_SRC
 *** Folding
 #+BEGIN_SRC emacs-lisp
 
@@ -980,38 +987,11 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 ** Python
-To ensure direnv works properly, you need the .envrc in every (python)
-project.
-
-#+BEGIN_SRC
-
-  echo "layout python3" > .envrc
-  direnv allow  
-
-#+END_SRC
-
-Also add =.direnv= and =.envrc= to gitignore.
-
-#+BEGIN_SRC
-
-.envrc
-.direnv
-  
-#+END_SRC
-
 #+BEGIN_SRC emacs-lisp
-
-  (use-package elpy
-    :ensure t
-    :init
-    (elpy-enable))
 
   (use-package pyvenv
     :ensure t
     :config
-    (setq pyvenv-mode-line-indicator "(venv)")
-    (pyvenv-mode 1)
-    (pyvenv-tracking-mode 1)
     (setq pyvenv-post-activate-hooks
   	(list (lambda ()
   		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
@@ -1027,33 +1007,35 @@ Also add =.direnv= and =.envrc= to gitignore.
 
 #+END_SRC
 
-** Emacs Lisp
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package elisp-slime-nav
-    :straight t)
-
-  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
-    (add-hook hook 'turn-on-elisp-slime-nav-mode))
-
-
-  (with-eval-after-load 'lsp-mode
-    (add-to-list 'lsp-language-id-configuration
-                 '(emacs-lisp-mode . "emacs-lisp")))
-
-#+END_SRC
-
 ** Common Lisp
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package sly
-    :straight t
+    :ensure t
+    :hook
+    ((lisp-mode . paredit-mode)
+     (lisp-mode . rainbow-delimiters-mode))
     :config
     (setq sly-contribs '(sly-fancy))
-    (setq inferior-lisp-program "/opt/homebrew/bin/sbcl") 
-    :hook (lisp-mode . sly-mode))
+    (setq inferior-lisp-program "/opt/homebrew/bin/sbcl"))
+
+  (use-package sly-quicklisp
+    :ensure t)
+
+#+END_SRC
+
+** Scheme
+#+BEGIN_SRC elisp
+
+  (use-package geiser-mit)
+  (use-package geiser-guile)
+
+  (use-package racket-mode
+    :straight t
+    :hook
+    ((racket-mode . racket-xp-mode)
+     (racket-mode . paredit-mode)
+     (racket-mode . rainbow-delimiters-mode)))
 
 #+END_SRC
 
@@ -1065,19 +1047,7 @@ Also add =.direnv= and =.envrc= to gitignore.
 
 #+END_SRC
 
-** Racket
-#+BEGIN_SRC emacs-lisp
-
-  (use-package racket-mode
-    :straight t
-    :hook
-    ((racket-mode . racket-xp-mode)
-     (racket-mode . paredit-mode)
-     (racket-mode . rainbow-delimiters-mode)))
-
-#+END_SRC
 ** Web
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package emmet-mode
@@ -1098,7 +1068,6 @@ Also add =.direnv= and =.envrc= to gitignore.
 
   (use-package tide
     :ensure t
-    ;:after (company flycheck)    
     :after (corfu flycheck)
     :hook ((typescript-ts-mode . tide-setup)
     	 (tsx-ts-mode . tide-setup)
@@ -1112,8 +1081,7 @@ Also add =.direnv= and =.envrc= to gitignore.
     (setq flycheck-check-syntax-automatically '(save mode-enabled))
     (eldoc-mode +1)
     (tide-hl-identifier-mode +1)
-    ;(company-mode +1)
-    )
+    (corfu-mode +1))
 
   ;; aligns annotation to the right hand side
   ; (setq company-tooltip-align-annotations t)
@@ -1144,6 +1112,18 @@ Also add =.direnv= and =.envrc= to gitignore.
 
 #+END_SRC
 
+* Database Management
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ejc-sql
+    :ensure t)
+
+  (global-set-key (kbd "C-c eb") 'ejc-get-temp-editor-buffer)
+
+  (use-package sqlformat)
+
+#+END_SRC
+
 * Org
 #+BEGIN_SRC emacs-lisp
 
@@ -1166,6 +1146,52 @@ Also add =.direnv= and =.envrc= to gitignore.
 
 #+END_SRC
 
+** Agenda
+[[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][Guide on Org Agenda]]
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun zsega-org-skip-subtree-if-priority (priority)
+      "Skip an agenda subtree if it has a priority of PRIORITY.
+
+  PRIORITY may be one of the characters ?A, ?B, or ?C."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+  	(pri-value (* 1000 (- org-lowest-priority priority)))
+  	(pri-current (org-get-priority (thing-at-point 'line t))))
+      (if (= pri-value pri-current)
+  	subtree-end
+        nil)))
+
+  (defun zsega-org-skip-subtree-if-habit ()
+    "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t))))
+      (if (string= (org-entry-get nil "STYLE") "habit")
+  	subtree-end
+        nil)))
+
+  (add-to-list 'org-modules 'org-habit t)
+
+  (setq org-agenda-files '("~/RoamNotes/"))
+
+  (setq org-agenda-custom-commands
+      '(("d" "Daily agenda and all TODOs"
+         ((tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "" ((org-agenda-ndays 1)))
+          (alltodo ""
+                   ((org-agenda-skip-function '(or (zsega-org-skip-subtree-if-habit)
+                                                   (zsega-org-skip-subtree-if-priority ?A)
+                                                   (org-agenda-skip-if nil '(scheduled deadline))))
+                    (org-agenda-overriding-header "ALL normal priority tasks:")))))))
+
+#+END_SRC
+
+** Org TODO
+#+BEGIN_SRC emacs-lisp
+    
+#+END_SRC
+
 ** API Client: Verb
 #+BEGIN_SRC emacs-lisp
 
@@ -1174,7 +1200,6 @@ Also add =.direnv= and =.envrc= to gitignore.
     :config
     (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
     (setq verb-auto-kill-response-buffers 10))
-
 
 #+END_SRC
 
@@ -1222,6 +1247,12 @@ Also add =.direnv= and =.envrc= to gitignore.
     (require 'org-roam-dailies)
     (org-roam-db-autosync-mode))
 
+  (use-package org-roam-ui
+    :after org-roam
+    :commands org-roam-ui-mode
+    :diminish org-roam-ui-mode)
+    
+
 #+END_SRC
 
 * AI Integration
@@ -1268,6 +1299,12 @@ Using gptel for integration with LLM tools.
 ** mu4e
 [[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
 * Misc
+** Books
+#+BEGIN_SRC elisp
+
+  (use-package sicp)   ; The Wizard Book
+
+#+END_SRC
 ** Communication 
 #+BEGIN_SRC emacs-lisp
 
