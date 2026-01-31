@@ -76,7 +76,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(apheleia-formatters-respect-indent-level nil)
+ '(apheleia-global-mode t)
  '(company-global-modes nil)
+ '(css-indent-offset 2)
  '(js-indent-level 2)
  '(notmuch-saved-searches
    '((:name "inbox" :query "tag:inbox" :key [105] :sort-order
@@ -102,6 +105,7 @@
  '(scroll-bar-mode nil)
  '(standard-indent 2)
  '(tool-bar-mode nil)
+ '(vc-follow-symlinks nil)
  '(visible-bell t))
 
 (server-start)
