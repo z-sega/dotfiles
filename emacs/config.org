@@ -582,14 +582,24 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 * Programming
-** Line Numbers
+** Terminal
+*** Emulator
+#+BEGIN_SRC emacs-lisp
+
+  (use-package vterm
+    :ensure t)
+
+#+END_SRC
+
+** Common
+*** Line Numbers
 #+BEGIN_SRC emacs-lisp
 
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 #+END_SRC
 
-** Syntax Checker
+*** Syntax Checker
 #+BEGIN_SRC emacs-lisp
 
   (use-package flycheck
@@ -601,7 +611,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Utilities
+*** Utilities
 #+BEGIN_SRC emacs-lisp
 
   (use-package nhexl-mode)
@@ -830,7 +840,8 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Rust
+** Language Specific
+*** Rust
 [[https://robert.kra.hn/posts/rust-emacs-setup/][Rob's Rust Emacs Setup]]
 
 #+BEGIN_SRC emacs-lisp
@@ -842,7 +853,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Elm
+*** Elm
 #+BEGIN_SRC emacs-lisp
 
   (use-package elm-mode
@@ -850,7 +861,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Python
+*** Python
 #+BEGIN_SRC emacs-lisp
 
   (use-package pyvenv
@@ -869,7 +880,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Common Lisp
+*** Common Lisp
 #+BEGIN_SRC emacs-lisp
 
   (use-package sly
@@ -886,7 +897,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Scheme
+*** Scheme
 #+BEGIN_SRC elisp
 
   (use-package geiser)
@@ -902,7 +913,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Haskell
+*** Haskell
 #+BEGIN_SRC emacs-lisp
 
    (use-package haskell-mode
@@ -910,7 +921,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Web
+*** Web
 #+BEGIN_SRC emacs-lisp
 
   (use-package emmet-mode
@@ -924,7 +935,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Typescript and Javascript
+*** Typescript and Javascript
 #+BEGIN_SRC emacs-lisp
 
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
@@ -961,7 +972,7 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** React
+*** React
 #+BEGIN_SRC emacs-lisp
 
   (setq gc-cons-threshold (* 100 1024 1024)
@@ -1006,58 +1017,6 @@ Ensure =brew install gnu-sed=
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((java . t)))
-
-#+END_SRC
-
-** Agenda
-[[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][Guide on Org Agenda]]
-
-#+BEGIN_SRC emacs-lisp
-
-  (defun zsega-org-skip-subtree-if-priority (priority)
-      "Skip an agenda subtree if it has a priority of PRIORITY.
-
-  PRIORITY may be one of the characters ?A, ?B, or ?C."
-    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-  	(pri-value (* 1000 (- org-lowest-priority priority)))
-  	(pri-current (org-get-priority (thing-at-point 'line t))))
-      (if (= pri-value pri-current)
-  	subtree-end
-        nil)))
-
-  (defun zsega-org-skip-subtree-if-habit ()
-    "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
-    (let ((subtree-end (save-excursion (org-end-of-subtree t))))
-      (if (string= (org-entry-get nil "STYLE") "habit")
-  	subtree-end
-        nil)))
-
-  (add-to-list 'org-modules 'org-habit t)
-
-  (setq org-agenda-files '("~/RoamNotes/"))
-
-  (setq org-agenda-custom-commands
-      '(("d" "Daily agenda and all TODOs"
-         ((tags "PRIORITY=\"A\""
-                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
-          (agenda "" ((org-agenda-ndays 1)))
-          (alltodo ""
-                   ((org-agenda-skip-function '(or (zsega-org-skip-subtree-if-habit)
-                                                   (zsega-org-skip-subtree-if-priority ?A)
-                                                   (org-agenda-skip-if nil '(scheduled deadline))))
-                    (org-agenda-overriding-header "ALL normal priority tasks:")))))))
-
-#+END_SRC
-
-** API Client: Verb
-#+BEGIN_SRC emacs-lisp
-
-  (use-package verb
-    :ensure t
-    :config
-    (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
-    (setq verb-auto-kill-response-buffers 10))
 
 #+END_SRC
 
@@ -1110,6 +1069,61 @@ Ensure =brew install gnu-sed=
     :commands org-roam-ui-mode
     :diminish org-roam-ui-mode)
     
+#+END_SRC
+
+** API Client: Verb
+#+BEGIN_SRC emacs-lisp
+
+  (use-package verb
+    :ensure t
+    :config
+    (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
+    (setq verb-auto-kill-response-buffers 10))
+
+#+END_SRC
+
+** Agenda
+[[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][Guide on Org Agenda]]
+
+#+BEGIN_SRC emacs-lisp
+
+  (defun zsega-org-skip-subtree-if-priority (priority)
+      "Skip an agenda subtree if it has a priority of PRIORITY.
+
+  PRIORITY may be one of the characters ?A, ?B, or ?C."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+  	(pri-value (* 1000 (- org-lowest-priority priority)))
+  	(pri-current (org-get-priority (thing-at-point 'line t))))
+      (if (= pri-value pri-current)
+  	subtree-end
+        nil)))
+
+  (defun zsega-org-skip-subtree-if-habit ()
+    "Skip an agenda entry if it has a STYLE property equal to \"habit\"."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t))))
+      (if (string= (org-entry-get nil "STYLE") "habit")
+  	subtree-end
+        nil)))
+
+  (add-to-list 'org-modules 'org-habit t)
+
+  (setq org-agenda-files '("~/RoamNotes/20250826085956-important.org"
+  			 "~/RoamNotes/20250826002230-bills.org"
+  			 "~/RoamNotes/20250826002155-habits.org"
+  			 "~/RoamNotes/20250918212615-medical.org"))
+
+  (setq org-agenda-custom-commands
+      '(("d" "Daily agenda and all TODOs"
+         ((tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "" ((org-agenda-ndays 1)))
+          (alltodo ""
+                   ((org-agenda-skip-function '(or (zsega-org-skip-subtree-if-habit)
+                                                   (zsega-org-skip-subtree-if-priority ?A)
+                                                   (org-agenda-skip-if nil '(scheduled deadline))))
+                    (org-agenda-overriding-header "ALL normal priority tasks:")))))))
+
 #+END_SRC
 
 * AI Integration

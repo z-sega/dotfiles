@@ -107,5 +107,3 @@
  '(tool-bar-mode nil)
  '(vc-follow-symlinks nil)
  '(visible-bell t))
-
-(server-start)
