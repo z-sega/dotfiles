@@ -519,7 +519,18 @@ Configurations for frames go here
 
 #+END_SRC
 
-* Theme
+* Appearance
+** Emoji
+Star-eyes! 🤩
+#+BEGIN_SRC emacs-lisp
+
+  (set-fontset-font t 'symbol
+                    (font-spec :family "Apple Color Emoji")
+  		  nil 'prepend)
+
+#+END_SRC
+
+** Theme
 [[https://github.com/doomemacs/themes?tab=readme-ov-file][DoomEmacs Theme List]]
 
 [[https://github.com/guidoschmidt/circadian.el?tab=readme-ov-file][Circadian]] switches theme based on daylight.
@@ -1106,11 +1117,6 @@ Ensure =brew install gnu-sed=
         nil)))
 
   (add-to-list 'org-modules 'org-habit t)
-
-  (setq org-agenda-files '("~/RoamNotes/20250826085956-important.org"
-  			 "~/RoamNotes/20250826002230-bills.org"
-  			 "~/RoamNotes/20250826002155-habits.org"
-  			 "~/RoamNotes/20250918212615-medical.org"))
 
   (setq org-agenda-custom-commands
       '(("d" "Daily agenda and all TODOs"
