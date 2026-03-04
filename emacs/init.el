@@ -78,21 +78,23 @@
  ;; If there is more than one, they won't work right.
  '(apheleia-formatters-respect-indent-level nil)
  '(apheleia-global-mode t)
+ '(auth-source-save-behavior nil)
  '(company-global-modes nil)
  '(css-indent-offset 2)
  '(js-indent-level 2)
  '(notmuch-saved-searches
-   '((:name "inbox" :query "tag:inbox" :key [105] :sort-order
+   '((:name "📥 Gmail Inbox" :query "tag:gmail and tag:inbox" :key [103]
+	    :sort-order newest-first)
+     (:name "📥 Zoho Inbox" :query "tag:zoho and tag:inbox" :key [122]
+	    :sort-order newest-first)
+     (:name "📤 Gmail Sent" :query "tag:gmail and tag:sent" :key [115]
+	    :sort-order newest-first)
+     (:name "📤 Zoho Sent" :query "tag:zoho and tag:sent" :key [83]
+	    :sort-order newest-first)
+     (:name "✉ Gmail All" :query "tag:gmail" :key [71] :sort-order
 	    newest-first)
-     (:name "unread" :query "tag:unread" :key [117] :sort-order
-	    newest-first)
-     (:name "flagged" :query "tag:flagged" :key [102] :sort-order
-	    newest-first)
-     (:name "sent" :query "tag:sent" :key [116] :sort-order
-	    newest-first)
-     (:name "drafts" :query "tag:draft" :key [100] :sort-order
-	    newest-first)
-     (:name "all mail" :query "*" :key [97] :sort-order newest-first)))
+     (:name "✉ Zoho All" :query "tag:zoho" :key [90] :sort-order
+	    newest-first)))
  '(safe-local-variable-values
    '((eval put 'mailer-merge-common-variables 'racket-indent-function
 	   #'begin)

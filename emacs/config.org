@@ -1176,6 +1176,24 @@ Using gptel for integration with LLM tools.
 #+END_SRC
 
 * Mail
+** Gnus
+#+BEGIN_SRC emacs-lisp
+
+  (setq gnus-select-method '(nnimap "imap.gmail.com"
+  				  (nnimap-stream starttls)
+  				  (nnmail-expiry-target "nnimap+gmail:[Gmail]/Trash")
+  				  (nnmail-expiry-wait 90))
+        gnus-secondary-select-methods '((nnimap "imappro.zoho.com"
+  					      (nnimap-stream starttls)
+  					      (nnmail-expiry-wait 90)))
+        gnus-extra-headers '(To Newsgroups X-GM-LABELS)
+        gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date
+  				   (not gnus-thread-sort-by-number))
+        gnus-use-cache t
+        gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject)
+
+#+END_SRC
+
 ** Notmuch
 [[eww:https://jonathanchu.is/posts/emacs-notmuch-isync-msmtp-setup/][Notmuch emacs setup]]
 
@@ -1186,10 +1204,34 @@ Using gptel for integration with LLM tools.
     :defer t)
 
   (setq send-mail-function 'sendmail-send-it
-      sendmail-program "/opt/homebrew/bin/msmtp"
-      mail-specify-envelope-from t
-      message-sendmail-envelope-from 'header
-      mail-envelope-from 'header)
+        sendmail-program "/opt/homebrew/bin/msmtp"
+        mail-specify-envelope-from t
+        message-sendmail-envelope-from 'header
+        mail-envelope-from 'header
+        notmuch-search-oldest-first nil
+        notmuch-saved-searches '((:name "📥 [ayosemail@gmail] Inbox"
+  				      :query "tag:gmail and tag:inbox"
+  				      :key "g")
+
+  			       (:name "📥 [mail@ayoonipe] Inbox"
+  				      :query "tag:zoho and tag:inbox"
+  				      :key "z")
+
+  			       (:name "📤 [ayosemail@gmail] Sent"
+  				      :query "tag:gmail and tag:sent"
+  				      :key "s")
+
+  			       (:name "📤 [mail@ayoonipe] Sent"
+  				      :query "tag:zoho and tag:sent"
+  				      :key "S")
+
+  			       (:name "📦 All [ayosemail@gmail]"
+  				      :query "tag:gmail"
+  				      :key "G")
+
+  			       (:name "📦 All [mail@ayoonipe]"
+  				      :query "tag:zoho"
+  				      :key "Z")))
 
 #+END_SRC
 
@@ -1204,7 +1246,7 @@ Using gptel for integration with LLM tools.
 
 #+END_SRC
 
-** Communication 
+** Communication
 #+BEGIN_SRC emacs-lisp
 
   (use-package ement)
@@ -1224,22 +1266,29 @@ Using gptel for integration with LLM tools.
   	  ".org"))
 
   (use-package org-remark
-    :bind (;; :bind keyword also implicitly defers org-remark itself.
-           ;; Keybindings before :map is set for global-map. Adjust the keybinds
-           ;; as you see fit.
-           ("C-c n m" . org-remark-mark)
-           ("C-c n l" . org-remark-mark-line)
-           :map org-remark-mode-map
-           ("C-c n o" . org-remark-open)
-           ("C-c n ]" . org-remark-view-next)
-           ("C-c n [" . org-remark-view-prev)
-           ("C-c n r" . org-remark-remove)
-           ("C-c n d" . org-remark-delete))
+    :bind
+    (;; :bind keyword also implicitly defers org-remark itself.
+     ;; Keybindings before :map is set for global-map. Adjust the keybinds
+     ;; as you see fit.
+     ("C-c n m" . org-remark-mark)
+     ("C-c n l" . org-remark-mark-line)
+     :map org-remark-mode-map
+     ("C-c n o" . org-remark-open)
+     ("C-c n ]" . org-remark-view-next)
+     ("C-c n [" . org-remark-view-prev)
+     ("C-c n r" . org-remark-remove)
+     ("C-c n d" . org-remark-delete))
     :config
     (org-remark-global-tracking-mode +1)
     (org-remark-nov-mode +1)
     (org-remark-info-mode +1)
     (org-remark-eww-mode +1)
     (setq org-remark-notes-file-name #'zsega-save-remark-notes))
+
+#+END_SRC
+** Social
+#+BEGIN_SRC emacs-lisp
+
+  (use-package telega)
 
 #+END_SRC
