@@ -81,6 +81,7 @@
  '(auth-source-save-behavior nil)
  '(company-global-modes nil)
  '(css-indent-offset 2)
+ '(global-hl-line-mode t)
  '(js-indent-level 2)
  '(notmuch-saved-searches
    '((:name "📥 Gmail Inbox" :query "tag:gmail and tag:inbox" :key [103]
@@ -94,7 +95,8 @@
      (:name "✉ Gmail All" :query "tag:gmail" :key [71] :sort-order
 	    newest-first)
      (:name "✉ Zoho All" :query "tag:zoho" :key [90] :sort-order
-	    newest-first)))
+	    newest-first)) t)
+ '(notmuch-show-logo nil)
  '(safe-local-variable-values
    '((eval put 'mailer-merge-common-variables 'racket-indent-function
 	   #'begin)
