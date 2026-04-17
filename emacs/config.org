@@ -1280,15 +1280,6 @@ Using gptel for integration with LLM tools.
 [[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
 
 * Misc
-** Dictionary
-#+BEGIN_SRC emacs-lisp
-
-  (use-package osx-dictionary
-    :ensure t)
-
-  (global-set-key (kbd "C-c d") 'osx-dictionary-search-word-at-point)
-
-#+END_SRC
 ** Books
 #+BEGIN_SRC elisp
 
