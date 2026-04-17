@@ -12,10 +12,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :extend nil :stipple nil :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 150 :width normal :foundry "nil" :family "TX-02"))))
- '(eshell-prompt ((t (:inherit modus-themes-prompt :weight bold)))))
+ '(eshell-prompt ((t (:inherit modus-themes-prompt :weight bold))))
+ '(gptel-response-highlight ((t (:extend t :background "linen"))))
+ '(tooltip ((t (:background "#c9b9b0" :foreground "#000000" :family "Monaspace Neon")))))
 
 ;; Standard Elpaca Bootstrap
-(defvar elpaca-installer-version 0.11)
+(defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -82,6 +84,7 @@
  '(company-global-modes nil)
  '(css-indent-offset 2)
  '(global-hl-line-mode t)
+ '(gptel-include-reasoning nil)
  '(js-indent-level 2)
  '(notmuch-saved-searches
    '((:name "📥 Gmail Inbox" :query "tag:gmail and tag:inbox" :key [103]
@@ -97,6 +100,10 @@
      (:name "✉ Zoho All" :query "tag:zoho" :key [90] :sort-order
 	    newest-first)) t)
  '(notmuch-show-logo nil)
+ '(org-agenda-files
+   '("~/RoamNotes/20250826002230-bills.org"
+     "/Users/ayo/RoamNotes/20250918212615-medical.org"
+     "/Users/ayo/RoamNotes/20250826085956-important.org"))
  '(safe-local-variable-values
    '((eval put 'mailer-merge-common-variables 'racket-indent-function
 	   #'begin)

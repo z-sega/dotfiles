@@ -612,6 +612,16 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 ** Common
+*** Sticky Header
+#+BEGIN_SRC emacs-lisp
+
+  (use-package topsy
+    :hook
+    (prog-mode . topsy-mode)
+    (magit-section-mode . topsy-mode))
+
+#+END_SRC
+
 *** Line Numbers
 #+BEGIN_SRC emacs-lisp
 
@@ -920,16 +930,16 @@ Ensure =brew install gnu-sed=
 *** Scheme
 #+BEGIN_SRC elisp
 
-  (use-package geiser)
-  (use-package geiser-mit)
-  (use-package geiser-guile)
+  (use-package geiser-mit :ensure t)
+  (use-package geiser-guile :ensure t)
 
   (use-package racket-mode
     :straight t
     :hook
     ((racket-mode . racket-xp-mode)
      (racket-mode . paredit-mode)
-     (racket-mode . rainbow-delimiters-mode)))
+     (racket-mode . rainbow-delimiters-mode)
+     (racket-mode . racket-input-mode)))
 
 #+END_SRC
 
@@ -1048,7 +1058,7 @@ Ensure =brew install gnu-sed=
 
   (add-hook 'csv-mode-hook 'csv-highlight)
   (add-hook 'csv-mode-hook 'csv-align-mode)
-  (add-hook 'csv-mode-hook '(lambda () (interactive) (toggle-truncate-lines nil))))
+  (add-hook 'csv-mode-hook '(lambda () (interactive) (toggle-truncate-lines nil)))
 
 #+END_SRC
 
@@ -1197,38 +1207,14 @@ Using gptel for integration with LLM tools.
   (use-package gptel
     :config
     (setq gptel-default-mode 'org-mode)
-          (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n")
-          (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n")
-          (setq gptel-model 'deepseek-reasoner
-  	      gptel-backend (gptel-make-deepseek "DeepSeek"
-  			      :stream t
-  			      :key (read-env-variable "DEEPSEEK_API_KEY"))))
+          (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n\n")
+          (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n\n")
+          (setq gptel-model 'gemini-2.5-pro-exp-03-25
+  	      gptel-backend (gptel-make-gemini "Gemini"
+  			      :key (read-env-variable "GEMINI_API_KEY")
+  			      :stream t)))
            
-  ;    (setq gptel-api-key
-  ;          (read-env-variable "OPENAI_API_KEY"))
-
  #+END_SRC
-
-** Agents
-#+BEGIN_SRC emacs-lisp
-
-  ;; (use-package agent-shell
-  ;;   :ensure t
-  ;;   :ensure-system-package
-  ;;   ;; Add agent installation configs here
-  ;;   ((claude . "brew install claude-code")
-  ;;    (claude-code-acp . "npm install -g @zed-industries/claude-code-acp")))
-
-  ;; (setq agent-shell-preferred-agent-config
-  ;;       (agent-shell-anthropic-make-claude-code-config))
-
-  ;; (setq agent-shell-mcp-servers
-  ;;     '(((name . "figma")
-  ;;        (type . "http")
-  ;;        (headers . [])
-  ;;        (url . "https://mcp.figma.com/mcp"))))
-
-#+END_SRC
 
 * Mail
 ** Gnus
@@ -1294,6 +1280,15 @@ Using gptel for integration with LLM tools.
 [[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
 
 * Misc
+** Dictionary
+#+BEGIN_SRC emacs-lisp
+
+  (use-package osx-dictionary
+    :ensure t)
+
+  (global-set-key (kbd "C-c d") 'osx-dictionary-search-word-at-point)
+
+#+END_SRC
 ** Books
 #+BEGIN_SRC elisp
 
@@ -1305,6 +1300,16 @@ Using gptel for integration with LLM tools.
 #+BEGIN_SRC emacs-lisp
 
   (use-package ement)
+
+#+END_SRC
+
+** Math
+#+BEGIN_SRC emacs-lisp
+
+  (use-package org-fragtog
+    :ensure t)
+
+  (add-hook 'org-mode-hook 'org-fragtog-mode)
 
 #+END_SRC
 
@@ -1341,6 +1346,7 @@ Using gptel for integration with LLM tools.
     (setq org-remark-notes-file-name #'zsega-save-remark-notes))
 
 #+END_SRC
+
 ** Social
 #+BEGIN_SRC emacs-lisp
 
