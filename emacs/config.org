@@ -1034,6 +1034,10 @@ Ensure =brew install gnu-sed=
     (setq tramp-chunksize 2000)
     (setq tramp-ssh-controlmaster-options nil))
 
+  (with-eval-after-load 'tramp
+    ;; Tell Tramp to respect the remote system's $PATH
+    (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+
 #+END_SRC
 * Structured Data Management
 ** CSV
