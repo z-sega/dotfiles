@@ -930,8 +930,24 @@ Ensure =brew install gnu-sed=
 *** Scheme
 #+BEGIN_SRC elisp
 
-  (use-package geiser-mit :ensure t)
-  (use-package geiser-guile :ensure t)
+  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook #'rainbow-delimiters-mode)
+
+  (use-package geiser
+    :ensure (geiser 
+     	   :fetcher codeberg 
+     	   :repo "geiser/geiser" 
+     	   :files ("elisp/*.el" "doc/dir" "doc/geiser.texi")))
+
+  (use-package geiser-guile
+    :ensure (geiser-guile
+    	   :fetcher codeberg
+    	   :repo "geiser/guile"
+    	   :files (:defaults ("src" "src/*")))
+    :after geiser)
+
+  (setenv "GUILE_LOAD_PATH" "/opt/homebrew/share/guile/site/3.0")
+  (setenv "GUILE_LOAD_COMPILED_PATH" "/opt/homebrew/lib/guile/3.0/site-ccache")
 
   (use-package racket-mode
     :straight t
