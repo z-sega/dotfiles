@@ -1,3 +1,9 @@
+* Homebrew
+#+BEGIN_SRC emacs-lisp
+
+  (add-to-list 'Info-additional-directory-list "/opt/homebrew/share/info")
+
+#+END_SRC
 * Core Keybindings
 
 #+BEGIN_SRC emacs-lisp
