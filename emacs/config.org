@@ -601,6 +601,14 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
+* Managing Environment Variables
+#+BEGIN_SRC emacs-lisp
+
+  (use-package envrc
+    :hook (after-init . envrc-global-mode))
+
+#+END_SRC
+
 * Programming
 ** Terminal
 *** Emulator
@@ -862,14 +870,6 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-*** Environment
-#+BEGIN_SRC emacs-lisp
-
-  (use-package envrc
-    :hook (after-init . envrc-global-mode))
-
-#+END_SRC
-
 ** Language Specific
 *** Rust
 [[https://robert.kra.hn/posts/rust-emacs-setup/][Rob's Rust Emacs Setup]]
@@ -1033,6 +1033,7 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 * Remote Situations
+** Tramp
 #+BEGIN_SRC emacs-lisp
 
   (use-package tramp
