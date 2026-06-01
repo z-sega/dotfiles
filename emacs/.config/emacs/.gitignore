@@ -1,0 +1,17 @@
+# Ignore no-littering output directories
+etc/
+var/
+
+# Ignore package managers and cache
+eln-cache/
+elpa/
+elpaca/
+straight/
+
+# Ignore miscellaneous runtime state
+auto-save-list/
+eshell/
+history/
+org-roam.db
+*.el~
+*.org~

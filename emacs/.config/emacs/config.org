@@ -12,42 +12,22 @@ Any manual installations in this config will be prepended with MANUAL.
 
 #+BEGIN_SRC emacs-lisp
 
-  (add-to-list 'load-path "~/.emacs.d/manual-packages/")
+  (add-to-list 'load-path
+  	     (expand-file-name "manual-packages/" user-emacs-directory))
 
 #+END_SRC
 
 ** Package Repositories
 Not compatible with elpaca
 
-** Setup Elpaca
-Check the init.el for standard Elpaca bootstrap.
-
-** Setup Straight
-#+BEGIN_SRC emacs-lisp
-
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-  	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-  	(bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-  	  (url-retrieve-synchronously
-  	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-  	   'silent 'inhibit-cookies)
-  	(goto-char (point-max))
-  	(eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
-
-#+END_SRC
-
 ** Packages
 *** Snippets
 #+BEGIN_SRC emacs-lisp
 
    (use-package yasnippet
-     :ensure t
      :config
-     (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+     (setq yas-snippet-dirs
+  	 (list (expand-file-name "snippets/" user-emacs-directory)))
      (yas-global-mode 1))
 
 #+END_SRC
@@ -57,7 +37,6 @@ Check the init.el for standard Elpaca bootstrap.
 #+BEGIN_SRC emacs-lisp
 
   (use-package corfu
-    :ensure (:files (:defaults "extensions/*"))
     :demand t                      ; need this when using :bind or :hook
     :config
     (global-corfu-mode 1)
@@ -71,7 +50,6 @@ Check the init.el for standard Elpaca bootstrap.
 
   ;; corfu extension (in corfu/extensions/corfu-history.el); load after corfu
   (use-package corfu-history
-    :ensure nil
     :after corfu
     :config
     (corfu-history-mode)
@@ -105,11 +83,9 @@ Check the init.el for standard Elpaca bootstrap.
 #+BEGIN_SRC emacs-lisp
 
   (use-package blacken
-    :ensure t
     :hook (python-mode . blacken-mode))
 
   (use-package apheleia
-    :ensure t
     :diminish ""
     :defines
     apheleia-formatters
@@ -118,7 +94,7 @@ Check the init.el for standard Elpaca bootstrap.
     apheleia-global-mode
     :config
     (setf (alist-get 'black apheleia-formatters)
-        '("/opt/homebrew/bin/black" "-"))
+        '("black" "-"))
     (setf (alist-get 'prettier-json apheleia-formatters)
           '("prettier" "--stdin-filepath" filepath))
     (setf (alist-get 'prettier apheleia-formatters)
@@ -134,7 +110,6 @@ Check the init.el for standard Elpaca bootstrap.
 #+BEGIN_SRC emacs-lisp
 
   (use-package ligature
-    :ensure t
     :config
     ;; Enable the www ligature in every possible major mode
     (ligature-set-ligatures 't '("www"))
@@ -156,8 +131,7 @@ Check the init.el for standard Elpaca bootstrap.
 *** Keyboard Menus
 #+BEGIN_SRC emacs-lisp
 
-  (use-package transient
-    :ensure t)
+  (use-package transient)
 
 #+END_SRC
 
@@ -172,19 +146,24 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 * Core
-** Search
+** Compatibility
 #+BEGIN_SRC emacs-lisp
 
-  (use-package rg)
+  (use-package compat)
+
+#+END_SRC
+
+** TODO Search: Figure out rg on guix
+#+BEGIN_SRC emacs-lisp
+
+  ;; (use-package rg)
 
 #+END_SRC
 
 ** Autosaves
-#+BEGIN_SRC emacs-lisp
+Visit init.el to see how this connects with no-littering
 
-  (setq auto-save-file-name-transforms
-	`((".*" "~/.emacs.d/auto-saves/" t)))
-  (setq auto-save-list-file-prefix "~/.emacs.d/auto-saves/.saves-")
+#+BEGIN_SRC emacs-lisp
 
   ;; Autosave after 20 keystrokes and every 30 seconds of idle time
   (setq auto-save-timeout 30)
@@ -193,9 +172,10 @@ Check the init.el for standard Elpaca bootstrap.
 #+END_SRC
 
 ** Backups
+Visit init.el to see how this connects with no-littering
+
 #+BEGIN_SRC emacs-lisp
 
-  (setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
   (setq backup-by-copying t    ;; Don't clobber symlinks
 	delete-old-versions t  ;; Automatically delete excess backups
 	kept-new-versions 6    ;; Keep some recent backups
@@ -211,10 +191,11 @@ Check the init.el for standard Elpaca bootstrap.
   (defun read-env-variable (variable-name)
     "Read the value of VARIABLE-NAME from the .env file."
     (with-temp-buffer
-      (insert-file-contents "/Users/ayo/.emacs.d/.env")
+      ;; CHANGED: Point to home directory independent of the OS username
+      (insert-file-contents (expand-file-name ".env" user-emacs-directory))
       (goto-char (point-min))
       (when (re-search-forward (concat "^" (regexp-quote variable-name) "=\\(.+\\)") nil t)
-	(match-string 1))))
+        (match-string 1))))
 
 #+END_SRC
 
@@ -260,13 +241,11 @@ Configurations for frames go here
 
   ;; Persist history over Emacs restarts. Vertico sorts by history position.
   (use-package savehist
-    :straight t
     :init
     (savehist-mode))
 
   ;; A few more useful configurations...
   (use-package emacs
-    :straight t
     :custom
     ;; Support opening new minibuffers from inside existing minibuffers.
     (enable-recursive-minibuffers t)
@@ -298,7 +277,6 @@ Configurations for frames go here
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
   (use-package vertico
-    :ensure t
     ;; :custom
     ;; (vertico-scroll-margin 0) ;; Different scroll margin
     ;; (vertico-count 20) ;; Show more candidates
@@ -308,7 +286,6 @@ Configurations for frames go here
     (vertico-mode))
 
   (use-package orderless
-    :ensure t
     :custom
     ;; Configure a custom style dispatcher (see the Consult wiki)
     ;; (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
@@ -319,7 +296,6 @@ Configurations for frames go here
 
   ;; Enable rich annotations using the Marginalia package
   (use-package marginalia
-    :ensure t
     ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
     ;; available in the *Completions* buffer, add it to the
     ;; `completion-list-mode-map'.
@@ -334,12 +310,10 @@ Configurations for frames go here
     ;; package.
     (marginalia-mode))
 
-  (use-package mct
-    :ensure t)
+  (use-package mct)
 
   ;; Example configuration for Consult
   (use-package consult
-    :ensure t
     ;; Replace bindings. Lazily loaded by `use-package'.
     :bind (;; C-c bindings in `mode-specific-map'
   	   ("C-c M-x" . consult-mode-command)
@@ -436,7 +410,6 @@ Configurations for frames go here
     (setq consult-narrow-key "<"))
 
   (use-package embark
-    :ensure t
     :bind
     (("C-." . embark-act)         ;; pick some comfortable binding
      ("C-;" . embark-dwim)        ;; good alternative: M-.
@@ -464,7 +437,7 @@ Configurations for frames go here
 
   ;; Consult users will also want the embark-consult package.
   (use-package embark-consult
-    :ensure t ; only need to install it, embark loads it after consult if found
+    ;; only need to install it, embark loads it after consult if found
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -473,7 +446,7 @@ Configurations for frames go here
 * Filesystem Management
 #+BEGIN_SRC emacs-lisp
 
-  (setq insert-directory-program "gls" dired-use-ls-dired t)
+  (setq insert-directory-program "ls" dired-use-ls-dired t)
   (setq dired-listing-switches "-al --group-directories-first")
   (setf dired-kill-when-opening-new-dired-buffer t)
   (setq delete-by-moving-to-trash t)
@@ -481,7 +454,6 @@ Configurations for frames go here
   (setq mouse-drag-and-drop-region-cross-program t)
 
   (use-package dirvish
-    :ensure t
     :init
     (dirvish-override-dired-mode)
     :custom
@@ -534,7 +506,7 @@ Star-eyes! 🤩
 #+BEGIN_SRC emacs-lisp
 
   (set-fontset-font t 'symbol
-                    (font-spec :family "Apple Color Emoji")
+                    (font-spec :family "Noto Color Emoji")
   		  nil 'prepend)
 
 #+END_SRC
@@ -546,17 +518,13 @@ Star-eyes! 🤩
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package modus-themes
-    :ensure t)
+  (use-package modus-themes)
   
-  (use-package ef-themes
-    :ensure t)
+  (use-package ef-themes)
 
-  (use-package doom-themes
-    :ensure t)
+  (use-package doom-themes)
 
   (use-package circadian
-    :ensure t
     :config
     (setq calendar-latitude 44.162758)
     (setq calendar-longitude -77.383232)
@@ -588,7 +556,7 @@ For publications and references.
 Ensure =brew install gnu-sed=
 #+BEGIN_SRC emacs-lisp
 
-  (setq Man-sed-command "gsed")
+  (setq Man-sed-command "sed")
 
 #+END_SRC
 
@@ -596,8 +564,7 @@ Ensure =brew install gnu-sed=
 ** Magit
 #+BEGIN_SRC emacs-lisp
 
-  (use-package magit
-    :ensure t)
+  (use-package magit)
 
 #+END_SRC
 
@@ -614,19 +581,18 @@ Ensure =brew install gnu-sed=
 *** Emulator
 #+BEGIN_SRC emacs-lisp
 
-  (use-package vterm
-    :ensure t)
+  (use-package vterm)
 
 #+END_SRC
 
 ** Common
-*** Sticky Header
+*** TODO Sticky Header: Find alternative
 #+BEGIN_SRC emacs-lisp
 
-  (use-package topsy
-    :hook
-    (prog-mode . topsy-mode)
-    (magit-section-mode . topsy-mode))
+  ;; (use-package topsy
+  ;;   :hook
+  ;;   (prog-mode . topsy-mode)
+  ;;   (magit-section-mode . topsy-mode))
 
 #+END_SRC
 
@@ -641,11 +607,12 @@ Ensure =brew install gnu-sed=
 #+BEGIN_SRC emacs-lisp
 
   (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode)
-    :bind (:map flycheck-mode-map
-                ("M-n" . flycheck-next-error)
-                ("M-p" . flycheck-previous-error)))
+    :config
+    (global-flycheck-mode)
+    :bind
+    (:map flycheck-mode-map
+          ("M-n" . flycheck-next-error)
+          ("M-p" . flycheck-previous-error)))
 
 #+END_SRC
 
@@ -655,29 +622,23 @@ Ensure =brew install gnu-sed=
   (use-package nhexl-mode)
 
   (use-package exec-path-from-shell
-     :ensure t
      :config (exec-path-from-shell-initialize))
 
    (use-package expand-region
-     :ensure t
      :bind (("C-=" . er/expand-region)
             ("C--" . er/contract-region)))
 
   (use-package which-key
-     :ensure t
      :config (which-key-mode))
 
   (use-package paredit
-    :straight t
     :bind
     (:map paredit-mode-map
           ("M-s" . nil)))
 
-  (use-package rainbow-delimiters
-    :straight t)
+  (use-package rainbow-delimiters)
 
-  (use-package all-the-icons
-     :straight t)
+  (use-package all-the-icons)
 
   ;; tree-sitter
   (setq major-mode-remap-alist
@@ -744,18 +705,10 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-*** Map
-#+BEGIN_SRC emacs-lisp
-
-  (use-package demap)
-
-#+END_SRC
-
 *** Folding
 #+BEGIN_SRC emacs-lisp
 
   (use-package hideshow ; built-in
-    :straight t
     :commands (hs-cycle
                hs-global-cycle)
     :bind (:map prog-mode-map
@@ -877,7 +830,6 @@ Ensure =brew install gnu-sed=
 #+BEGIN_SRC emacs-lisp
 
   (use-package rustic
-    :ensure t
     :config
     (setq rustic-format-on-save t))
 
@@ -886,71 +838,54 @@ Ensure =brew install gnu-sed=
 *** Elm
 #+BEGIN_SRC emacs-lisp
 
-  (use-package elm-mode
-    :ensure t)
+  (use-package elm-mode)
 
 #+END_SRC
 
 *** Python
 #+BEGIN_SRC emacs-lisp
 
-  (use-package pyvenv
-    :ensure t
-    :config
-    (setq pyvenv-post-activate-hooks
-  	(list (lambda ()
-  		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
-    (setq pyvenv-post-deactivate-hooks
-  	(list (lambda ()
-  		(setq python-shell-interpreter "python3")))))
+  ;; (use-package pyvenv
+  ;;   :config
+  ;;   (setq pyvenv-post-activate-hooks
+  ;; 	(list (lambda ()
+  ;; 		(setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python3")))))
+  ;;   (setq pyvenv-post-deactivate-hooks
+  ;; 	(list (lambda ()
+  ;; 		(setq python-shell-interpreter "python3")))))
 
-  (use-package python-mode
-    :ensure t
-    :custom (python-shell-interpreter "python3"))
+  ;; (use-package python-mode
+  ;;   :custom (python-shell-interpreter "python3"))
 
 #+END_SRC
 
 *** Common Lisp
 #+BEGIN_SRC emacs-lisp
 
-  (use-package sly
-    :ensure t
-    :hook
-    ((lisp-mode . paredit-mode)
-     (lisp-mode . rainbow-delimiters-mode))
-    :config
-    (setq sly-contribs '(sly-fancy))
-    (setq inferior-lisp-program "/opt/homebrew/bin/sbcl"))
+    (use-package sly
+      :hook
+      ((lisp-mode . paredit-mode)
+       (lisp-mode . rainbow-delimiters-mode))
+      :config
+      (setq sly-contribs '(sly-fancy))
+      (setq inferior-lisp-program "sbcl"))
 
-  (use-package sly-quicklisp
-    :ensure t)
+    (use-package sly-quicklisp)
 
 #+END_SRC
 
 *** Scheme
 #+BEGIN_SRC elisp
-
+  
   (add-hook 'scheme-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook #'rainbow-delimiters-mode)
 
-  (use-package geiser
-    :ensure (geiser 
-     	   :fetcher codeberg 
-     	   :repo "geiser/geiser" 
-     	   :files ("elisp/*.el" "doc/dir" "doc/geiser.texi")))
+  (use-package geiser)
 
   (use-package geiser-guile
-    :ensure (geiser-guile
-    	   :fetcher codeberg
-    	   :repo "geiser/guile"
-    	   :files (:defaults ("src" "src/*")))
     :after geiser)
 
-  (setenv "GUILE_LOAD_PATH" "/opt/homebrew/share/guile/site/3.0")
-  (setenv "GUILE_LOAD_COMPILED_PATH" "/opt/homebrew/lib/guile/3.0/site-ccache")
-
   (use-package racket-mode
-    :straight t
     :hook
     ((racket-mode . racket-xp-mode)
      (racket-mode . paredit-mode)
@@ -962,8 +897,7 @@ Ensure =brew install gnu-sed=
 *** Haskell
 #+BEGIN_SRC emacs-lisp
 
-   (use-package haskell-mode
-     :straight t)  
+   (use-package haskell-mode)
 
 #+END_SRC
 
@@ -973,11 +907,7 @@ Ensure =brew install gnu-sed=
   (use-package emmet-mode
       :hook ((html-mode) . emmet-mode))
 
-  (use-package jinja2-mode)
-
   (use-package mmm-mode)
-
-  (use-package mmm-jinja2)
 
 #+END_SRC
 
@@ -987,7 +917,6 @@ Ensure =brew install gnu-sed=
   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
 
   (use-package tide
-    :ensure t
     :after (corfu flycheck)
     :hook ((typescript-ts-mode . tide-setup)
     	 (tsx-ts-mode . tide-setup)
@@ -1083,23 +1012,22 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
-** Database Management
+** TODO Database Management: Figure out db management
 #+BEGIN_SRC emacs-lisp
 
-  (use-package ejc-sql
-    :ensure t)
+  ;; (use-package ejc-sql)
 
-  (global-set-key (kbd "C-c eb") 'ejc-get-temp-editor-buffer)
+  ;; (global-set-key (kbd "C-c eb") 'ejc-get-temp-editor-buffer)
 
-  (use-package sqlformat)
+  ;; (use-package sqlformat)
 
 #+END_SRC
 
 * Org
 #+BEGIN_SRC emacs-lisp
 
-  (use-package org-contrib
-    :ensure t)
+  (use-package org-contrib)
+
 
   ;; (require 'ob-oz)
 
@@ -1107,9 +1035,10 @@ Ensure =brew install gnu-sed=
     :config
     (add-hook 'ob-racket-pre-runtime-library-load-hook
   	      #'ob-racket-raco-make-runtime-library)
-    :straight (ob-racket
-  	     :type git :host github :repo "hasu/emacs-ob-racket"
-  	     :files ("*.el" "*.rkt")))
+    ;; :straight (ob-racket
+    ;; 	     :type git :host github :repo "hasu/emacs-ob-racket"
+    ;; 	     :files ("*.el" "*.rkt"))
+    )
 
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -1121,7 +1050,6 @@ Ensure =brew install gnu-sed=
 #+BEGIN_SRC emacs-lisp
 
   (use-package org-roam
-    :straight t
     :init (setq org-roam-v2-ack t)
     :custom
     (org-roam-directory "~/RoamNotes/")
@@ -1166,17 +1094,6 @@ Ensure =brew install gnu-sed=
     :commands org-roam-ui-mode
     :diminish org-roam-ui-mode)
     
-#+END_SRC
-
-** API Client: Verb
-#+BEGIN_SRC emacs-lisp
-
-  (use-package verb
-    :ensure t
-    :config
-    (define-key org-mode-map (kbd "C-c C-r") verb-command-map)
-    (setq verb-auto-kill-response-buffers 10))
-
 #+END_SRC
 
 ** Agenda
@@ -1256,70 +1173,22 @@ Using gptel for integration with LLM tools.
 
 #+END_SRC
 
-** Notmuch
-[[eww:https://jonathanchu.is/posts/emacs-notmuch-isync-msmtp-setup/][Notmuch emacs setup]]
-
-#+BEGIN_SRC emacs-lisp
-
-  (use-package notmuch
-    :ensure t
-    :defer t)
-
-  (setq send-mail-function 'sendmail-send-it
-        sendmail-program "/opt/homebrew/bin/msmtp"
-        mail-specify-envelope-from t
-        message-sendmail-envelope-from 'header
-        mail-envelope-from 'header
-        notmuch-search-oldest-first nil
-        notmuch-saved-searches '((:name "📥 [ayosemail@gmail] Inbox"
-  				      :query "tag:gmail and tag:inbox"
-  				      :key "g")
-
-  			       (:name "📥 [mail@ayoonipe] Inbox"
-  				      :query "tag:zoho and tag:inbox"
-  				      :key "z")
-
-  			       (:name "📤 [ayosemail@gmail] Sent"
-  				      :query "tag:gmail and tag:sent"
-  				      :key "s")
-
-  			       (:name "📤 [mail@ayoonipe] Sent"
-  				      :query "tag:zoho and tag:sent"
-  				      :key "S")
-
-  			       (:name "📦 All [ayosemail@gmail]"
-  				      :query "tag:gmail"
-  				      :key "G")
-
-  			       (:name "📦 All [mail@ayoonipe]"
-  				      :query "tag:zoho"
-  				      :key "Z")))
-
-#+END_SRC
-
-** mu4e
-[[eww:https://macowners.club/posts/email-emacs-mu4e-macos/][Email setup in Emacs with Mu4e on MacOS]]
-
 * Misc
+** Littering
+Visit the init.el file.
+
 ** Books
 #+BEGIN_SRC elisp
 
-  (use-package sicp)   ; The Wizard Book
-
-#+END_SRC
-
-** Communication
-#+BEGIN_SRC emacs-lisp
-
-  (use-package ement)
+  ;; (use-package sicp)   ; The Wizard Book
 
 #+END_SRC
 
 ** Math
 #+BEGIN_SRC emacs-lisp
 
-  (use-package org-fragtog
-    :ensure t)
+  (use-package org-fragtog)
+
 
   (add-hook 'org-mode-hook 'org-fragtog-mode)
 
@@ -1356,12 +1225,5 @@ Using gptel for integration with LLM tools.
     (org-remark-info-mode +1)
     (org-remark-eww-mode +1)
     (setq org-remark-notes-file-name #'zsega-save-remark-notes))
-
-#+END_SRC
-
-** Social
-#+BEGIN_SRC emacs-lisp
-
-  (use-package telega)
 
 #+END_SRC

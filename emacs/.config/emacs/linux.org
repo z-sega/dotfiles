@@ -1,0 +1,6 @@
+* Core Keybindings
+Keybindings are best handled with gnone-tweaks:
+- alt and win behaviour
+  - alt is swapped with win
+- ctrl position
+  - caps lock as ctrl
