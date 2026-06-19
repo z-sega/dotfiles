@@ -43,3 +43,6 @@
 (setq custom-file
       (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file)
+;; Warn about unsaved customizations when emacs is killed
+(add-hook 'kill-emacs-query-functions
+          'custom-prompt-customize-unsaved-options)

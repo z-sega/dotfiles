@@ -14,7 +14,11 @@
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.75)
-  (corfu-quit-no-match t) ; quit when the popup appears and I type anything else
+  ;; show documentation tooltips after some delay
+  (corfu-popupinfo-mode 1)
+  (corfu-popupinfo-delay '(0.5 . 0.1))
+  ;; quit when the popup appears and I type anything else
+  (corfu-quit-no-match t) 
   ;; Might want to customize corfu-sort-function
   :bind
   (("M-RET" . completion-at-point)))
@@ -92,6 +96,10 @@
 (setq inhibit-splash-screen t
       initial-scratch-message nil
       initial-major-mode 'org-mode)
+
+(use-package pinentry
+  :config
+  (pinentry-start))
 
 (use-package compat)
 
@@ -396,8 +404,8 @@
   (setq calendar-longitude -77.383232)
   ;(setq circadian-themes '((:sunrise . doom-moonlight)
   ;                         (:sunset  . doom-monokai-pro)))
-  (setq circadian-themes '((:sunrise . modus-operandi-tinted)
-			   (:sunset  . modus-vivendi-tinted)))
+  (setq circadian-themes '((:sunrise . modus-operandi)
+			   (:sunset  . modus-operandi)))
   (circadian-setup))
 
 (use-package speed-type)
@@ -414,9 +422,9 @@
 (use-package vterm)
 
 ;; (use-package topsy
-;;   :hook
-;;   (prog-mode . topsy-mode)
-;;   (magit-section-mode . topsy-mode))
+;;    :hook
+;;    (prog-mode . topsy-mode)
+;;    (magit-section-mode . topsy-mode))
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
@@ -431,14 +439,14 @@
 (use-package nhexl-mode)
 
 (use-package exec-path-from-shell
-   :config (exec-path-from-shell-initialize))
+  :config (exec-path-from-shell-initialize))
 
- (use-package expand-region
-   :bind (("C-=" . er/expand-region)
-          ("C--" . er/contract-region)))
+(use-package expand-region
+  :bind (("C-=" . er/expand-region)
+         ("C--" . er/contract-region)))
 
 (use-package which-key
-   :config (which-key-mode))
+  :config (which-key-mode))
 
 (use-package paredit
   :bind
@@ -449,13 +457,15 @@
 
 (use-package all-the-icons)
 
+(use-package nerd-icons)
+
 ;; tree-sitter
 (setq major-mode-remap-alist
-    '((typescript-mode . typescript-ts-mode)
-      (tsx-mode . tsx-ts-mode)
-      (js-mode . js-ts-mode)
-      (js2-mode . js-ts-mode)
-      (python-mode . python-ts-mode)))
+      '((typescript-mode . typescript-ts-mode)
+	(tsx-mode . tsx-ts-mode)
+	(js-mode . js-ts-mode)
+	(js2-mode . js-ts-mode)
+	(python-mode . python-ts-mode)))
 
 (use-package logview)
 
@@ -654,7 +664,7 @@ Returns either nil, or the position of the first null byte."
 (use-package haskell-mode)
 
 (use-package emmet-mode
-    :hook ((html-mode) . emmet-mode))
+  :hook ((html-mode) . emmet-mode))
 
 (use-package mmm-mode)
 
@@ -746,21 +756,19 @@ Returns either nil, or the position of the first null byte."
 
 (use-package org-contrib)
 
-
 ;; (require 'ob-oz)
 
 (use-package ob-racket
   :config
   (add-hook 'ob-racket-pre-runtime-library-load-hook
-	      #'ob-racket-raco-make-runtime-library)
-  ;; :straight (ob-racket
-  ;; 	     :type git :host github :repo "hasu/emacs-ob-racket"
-  ;; 	     :files ("*.el" "*.rkt"))
-  )
+	      #'ob-racket-raco-make-runtime-library))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((java . t)))
+
+(use-package org-sticky-header)
+(add-hook 'org-mode-hook 'org-sticky-header-mode)
 
 (use-package org-roam
   :init (setq org-roam-v2-ack t)
@@ -841,13 +849,19 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 
 (use-package gptel
   :config
+  ;; prompt view
   (setq gptel-default-mode 'org-mode)
-        (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n\n")
-        (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n\n")
-        (setq gptel-model 'gemini-2.5-pro-exp-03-25
-	      gptel-backend (gptel-make-gemini "Gemini"
-			      :key (read-env-variable "GEMINI_API_KEY")
-			      :stream t)))
+  (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n\n")
+  (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n\n")
+  ;; default model
+  (setq gptel-model 'gemini-2.5-pro-exp-03-25
+	gptel-backend (gptel-make-gemini "Gemini"
+			:key (read-env-variable "GEMINI_API_KEY")
+			:stream t))
+  ;; available
+  (gptel-make-deepseek "DeepSeek"
+		       :stream t
+		       :key (read-env-variable "DEEPSEEK_API_KEY")))
 
 (setq gnus-select-method '(nnimap "imap.gmail.com"
 				  (nnimap-stream starttls)
@@ -862,10 +876,85 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
       gnus-use-cache t
       gnus-summary-thread-gathering-function 'gnus-gather-threads-by-subject)
 
+;; Already made available thanks to the installation of mu in
+;; guix home config.
+(require 'mu4e)
+
+;; TODO:
+;;
+;; - Install pcre2el package for regex translation between emacs-regxp
+;; and pcre-regexp
+
+(setq mu4e-sent-folder   "/ayoonipe/Sent"       ;; folder for sent messages
+      mu4e-drafts-folder "/ayoonipe/Drafts"     ;; unfinished messages
+      mu4e-trash-folder  "/ayoonipe/Trash"      ;; trashed messages
+      mu4e-refile-folder "/ayoonipe/Archive")
+
+;;; Retrieving Mail
+;;;
+(setq
+ ;; run mail retrieval only when online
+ mu4e-get-mail-command
+ (lambda ()
+   (if (zerop (shell-command "nm-online -q"))
+       "mbsync -a"
+     "true"))
+ ;; update every 5 mins
+ mu4e-update-interval 300)
+
+;;; Sending Mail
+;;;
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-smtp-server "smtppro.zoho.com")
+
+;;; Headers
+;;;
+(add-to-list
+ 'mu4e-header-info-custom
+ '(:recipnum . (:name "Number of recipients"                  ;; long name, seen in message-view
+                :shortname "Recip#"                           ;; short name, seen in headers-view
+     	          :help "Number of recipients for this message" ;; tooltip
+		:function (lambda (msg)
+			    (format "%d"
+				    (+ (length (mu4e-message-field msg :to))
+				       (length (mu4e-message-field msg :cc))))))))
+
+(setq mu4e-headers-fields
+      '((:human-date . 12)
+	(:flags . 6)
+	(:recipnum . 6)
+	;; (:mailing-list . 10)
+	(:from-or-to . 22)
+	(:thread-subject)))
+
+;;; Messages
+;;;
+(setq mu4e-view-scroll-to-next nil          ; don't scroll to next msg
+      mu4e-attachment-dir "~/Downloads/")   ; attachments -> ~/Downloads
+
+;;; Composer
+;;;
+(setq message-dont-reply-to-names #'mu4e-personal-or-alternative-address-p
+      message-signature "Ayo Onipe")
+
+;;; General
+;;;
+(setq read-mail-command 'mu4e)
+;; (setq mail-user-agent 'mu4e-user-agent)      ; already to mu4e
+(setq mu4e-notification-support t
+      mu4e-eldoc-support t)
+
+;;; Getting Help
+;;;
+(add-to-list 'mu4e-bookmarks
+	     ;; add bookmark for recent messages on the Mu mailing list.
+	     (list :name  "Mu7Days"
+		   :key   ?m
+		   :query "list:mu-discuss.googlegroups.com AND date:7d..now"))
+
 ;; (use-package sicp)   ; The Wizard Book
 
 (use-package org-fragtog)
-
 
 (add-hook 'org-mode-hook 'org-fragtog-mode)
 

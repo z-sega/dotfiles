@@ -43,7 +43,11 @@ Not compatible with elpaca
     :custom
     (corfu-auto t)
     (corfu-auto-delay 0.75)
-    (corfu-quit-no-match t) ; quit when the popup appears and I type anything else
+    ;; show documentation tooltips after some delay
+    (corfu-popupinfo-mode 1)
+    (corfu-popupinfo-delay '(0.5 . 0.1))
+    ;; quit when the popup appears and I type anything else
+    (corfu-quit-no-match t) 
     ;; Might want to customize corfu-sort-function
     :bind
     (("M-RET" . completion-at-point)))
@@ -146,6 +150,15 @@ Not compatible with elpaca
 #+END_SRC
 
 * Core
+** Security
+#+BEGIN_SRC emacs-lisp
+
+  (use-package pinentry
+    :config
+    (pinentry-start))
+
+#+END_SRC
+
 ** Compatibility
 #+BEGIN_SRC emacs-lisp
 
@@ -530,8 +543,8 @@ Star-eyes! 🤩
     (setq calendar-longitude -77.383232)
     ;(setq circadian-themes '((:sunrise . doom-moonlight)
     ;                         (:sunset  . doom-monokai-pro)))
-    (setq circadian-themes '((:sunrise . modus-operandi-tinted)
-  			   (:sunset  . modus-vivendi-tinted)))
+    (setq circadian-themes '((:sunrise . modus-operandi)
+  			   (:sunset  . modus-operandi)))
     (circadian-setup))
 
 #+END_SRC
@@ -586,13 +599,13 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 ** Common
-*** TODO Sticky Header: Find alternative
+*** TODO Sticky Header: Have to use package-install
 #+BEGIN_SRC emacs-lisp
 
   ;; (use-package topsy
-  ;;   :hook
-  ;;   (prog-mode . topsy-mode)
-  ;;   (magit-section-mode . topsy-mode))
+  ;;    :hook
+  ;;    (prog-mode . topsy-mode)
+  ;;    (magit-section-mode . topsy-mode))
 
 #+END_SRC
 
@@ -622,14 +635,14 @@ Ensure =brew install gnu-sed=
   (use-package nhexl-mode)
 
   (use-package exec-path-from-shell
-     :config (exec-path-from-shell-initialize))
+    :config (exec-path-from-shell-initialize))
 
-   (use-package expand-region
-     :bind (("C-=" . er/expand-region)
-            ("C--" . er/contract-region)))
+  (use-package expand-region
+    :bind (("C-=" . er/expand-region)
+           ("C--" . er/contract-region)))
 
   (use-package which-key
-     :config (which-key-mode))
+    :config (which-key-mode))
 
   (use-package paredit
     :bind
@@ -640,13 +653,15 @@ Ensure =brew install gnu-sed=
 
   (use-package all-the-icons)
 
+  (use-package nerd-icons)
+
   ;; tree-sitter
   (setq major-mode-remap-alist
-      '((typescript-mode . typescript-ts-mode)
-        (tsx-mode . tsx-ts-mode)
-        (js-mode . js-ts-mode)
-        (js2-mode . js-ts-mode)
-        (python-mode . python-ts-mode)))
+        '((typescript-mode . typescript-ts-mode)
+  	(tsx-mode . tsx-ts-mode)
+  	(js-mode . js-ts-mode)
+  	(js2-mode . js-ts-mode)
+  	(python-mode . python-ts-mode)))
 
 #+END_SRC
 
@@ -876,7 +891,7 @@ Ensure =brew install gnu-sed=
 
 *** Scheme
 #+BEGIN_SRC elisp
-  
+
   (add-hook 'scheme-mode-hook #'enable-paredit-mode)
   (add-hook 'scheme-mode-hook #'rainbow-delimiters-mode)
 
@@ -905,7 +920,7 @@ Ensure =brew install gnu-sed=
 #+BEGIN_SRC emacs-lisp
 
   (use-package emmet-mode
-      :hook ((html-mode) . emmet-mode))
+    :hook ((html-mode) . emmet-mode))
 
   (use-package mmm-mode)
 
@@ -985,6 +1000,7 @@ Ensure =brew install gnu-sed=
     (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
 #+END_SRC
+
 * Structured Data Management
 ** CSV
 #+BEGIN_SRC emacs-lisp
@@ -1028,21 +1044,19 @@ Ensure =brew install gnu-sed=
 
   (use-package org-contrib)
 
-
   ;; (require 'ob-oz)
 
   (use-package ob-racket
     :config
     (add-hook 'ob-racket-pre-runtime-library-load-hook
-  	      #'ob-racket-raco-make-runtime-library)
-    ;; :straight (ob-racket
-    ;; 	     :type git :host github :repo "hasu/emacs-ob-racket"
-    ;; 	     :files ("*.el" "*.rkt"))
-    )
+  	      #'ob-racket-raco-make-runtime-library))
 
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((java . t)))
+
+  (use-package org-sticky-header)
+  (add-hook 'org-mode-hook 'org-sticky-header-mode)
 
 #+END_SRC
 
@@ -1135,6 +1149,31 @@ Ensure =brew install gnu-sed=
 
 #+END_SRC
 
+** Pomodoro
+#+BEGIN_SRC emacs-lisp
+
+  (require 'org-pomodoro)
+
+  (defun my/org-pomodoro-break-notification ()
+    (start-process "pomodoro-notify" nil "notify-send"
+                   "-u" "critical"
+                   "-a" "Emacs"
+                   "-i" "face-cool"
+                   "Pomodoro Finished!" "Step away from the screen and take a walk!"))
+
+  (defun my/org-pomodoro-work-notification ()
+    (start-process "pomodoro-notify" nil "notify-send"
+                   "-u" "normal"
+                   "-a" "Emacs"
+                   "-i" "face-smile"
+                   "Break Over!" "Time to get back to focus."))
+
+  (add-hook 'org-pomodoro-finished-hook 'my/org-pomodoro-break-notification)
+  (add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-work-notification)
+  (add-hook 'org-pomodoro-long-break-finished-hook 'my/org-pomodoro-work-notification)
+
+#+END_SRC
+
 * AI Integration
 Using gptel for integration with LLM tools.
 
@@ -1144,14 +1183,20 @@ Using gptel for integration with LLM tools.
 
   (use-package gptel
     :config
+    ;; prompt view
     (setq gptel-default-mode 'org-mode)
-          (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n\n")
-          (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n\n")
-          (setq gptel-model 'gemini-2.5-pro-exp-03-25
-  	      gptel-backend (gptel-make-gemini "Gemini"
-  			      :key (read-env-variable "GEMINI_API_KEY")
-  			      :stream t)))
-           
+    (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n\n")
+    (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n\n")
+    ;; default model
+    (setq gptel-model 'gemini-2.5-pro-exp-03-25
+  	gptel-backend (gptel-make-gemini "Gemini"
+  			:key (read-env-variable "GEMINI_API_KEY")
+  			:stream t))
+    ;; available
+    (gptel-make-deepseek "DeepSeek"
+  		       :stream t
+  		       :key (read-env-variable "DEEPSEEK_API_KEY")))
+
  #+END_SRC
 
 * Mail
@@ -1173,6 +1218,87 @@ Using gptel for integration with LLM tools.
 
 #+END_SRC
 
+** Mu4e
+#+BEGIN_SRC emacs-lisp
+
+  ;; Already made available thanks to the installation of mu in
+  ;; guix home config.
+  (require 'mu4e)
+
+  ;; TODO:
+  ;;
+  ;; - Install pcre2el package for regex translation between emacs-regxp
+  ;; and pcre-regexp
+
+  (setq mu4e-sent-folder   "/ayoonipe/Sent"       ;; folder for sent messages
+        mu4e-drafts-folder "/ayoonipe/Drafts"     ;; unfinished messages
+        mu4e-trash-folder  "/ayoonipe/Trash"      ;; trashed messages
+        mu4e-refile-folder "/ayoonipe/Archive")
+
+  ;;; Retrieving Mail
+  ;;;
+  (setq
+   ;; run mail retrieval only when online
+   mu4e-get-mail-command
+   (lambda ()
+     (if (zerop (shell-command "nm-online -q"))
+         "mbsync -a"
+       "true"))
+   ;; update every 5 mins
+   mu4e-update-interval 300)
+
+  ;;; Sending Mail
+  ;;;
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-smtp-server "smtppro.zoho.com")
+
+  ;;; Headers
+  ;;;
+  (add-to-list
+   'mu4e-header-info-custom
+   '(:recipnum . (:name "Number of recipients"                  ;; long name, seen in message-view
+                  :shortname "Recip#"                           ;; short name, seen in headers-view
+       	          :help "Number of recipients for this message" ;; tooltip
+  		:function (lambda (msg)
+  			    (format "%d"
+  				    (+ (length (mu4e-message-field msg :to))
+  				       (length (mu4e-message-field msg :cc))))))))
+
+  (setq mu4e-headers-fields
+        '((:human-date . 12)
+  	(:flags . 6)
+  	(:recipnum . 6)
+  	;; (:mailing-list . 10)
+  	(:from-or-to . 22)
+  	(:thread-subject)))
+
+  ;;; Messages
+  ;;;
+  (setq mu4e-view-scroll-to-next nil          ; don't scroll to next msg
+        mu4e-attachment-dir "~/Downloads/")   ; attachments -> ~/Downloads
+
+  ;;; Composer
+  ;;;
+  (setq message-dont-reply-to-names #'mu4e-personal-or-alternative-address-p
+        message-signature "Ayo Onipe")
+
+  ;;; General
+  ;;;
+  (setq read-mail-command 'mu4e)
+  ;; (setq mail-user-agent 'mu4e-user-agent)      ; already to mu4e
+  (setq mu4e-notification-support t
+        mu4e-eldoc-support t)
+
+  ;;; Getting Help
+  ;;;
+  (add-to-list 'mu4e-bookmarks
+  	     ;; add bookmark for recent messages on the Mu mailing list.
+  	     (list :name  "Mu7Days"
+  		   :key   ?m
+  		   :query "list:mu-discuss.googlegroups.com AND date:7d..now"))
+
+#+END_SRC
+
 * Misc
 ** Littering
 Visit the init.el file.
@@ -1188,7 +1314,6 @@ Visit the init.el file.
 #+BEGIN_SRC emacs-lisp
 
   (use-package org-fragtog)
-
 
   (add-hook 'org-mode-hook 'org-fragtog-mode)
 
