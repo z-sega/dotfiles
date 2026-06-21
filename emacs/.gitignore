@@ -1,3 +1,5 @@
+*.env
+
 # Ignore no-littering output directories
 etc/
 var/

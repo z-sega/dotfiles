@@ -847,6 +847,26 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
                                                  (org-agenda-skip-if nil '(scheduled deadline))))
                   (org-agenda-overriding-header "ALL normal priority tasks:")))))))
 
+(require 'org-pomodoro)
+
+(defun my/org-pomodoro-break-notification ()
+  (start-process "pomodoro-notify" nil "notify-send"
+                 "-u" "critical"
+                 "-a" "Emacs"
+                 "-i" "face-cool"
+                 "Pomodoro Finished!" "Step away from the screen and take a walk!"))
+
+(defun my/org-pomodoro-work-notification ()
+  (start-process "pomodoro-notify" nil "notify-send"
+                 "-u" "normal"
+                 "-a" "Emacs"
+                 "-i" "face-smile"
+                 "Break Over!" "Time to get back to focus."))
+
+(add-hook 'org-pomodoro-finished-hook 'my/org-pomodoro-break-notification)
+(add-hook 'org-pomodoro-break-finished-hook 'my/org-pomodoro-work-notification)
+(add-hook 'org-pomodoro-long-break-finished-hook 'my/org-pomodoro-work-notification)
+
 (use-package gptel
   :config
   ;; prompt view
@@ -953,6 +973,8 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 		   :query "list:mu-discuss.googlegroups.com AND date:7d..now"))
 
 ;; (use-package sicp)   ; The Wizard Book
+
+(setq org-preview-latex-default-process 'dvisvgm)
 
 (use-package org-fragtog)
 

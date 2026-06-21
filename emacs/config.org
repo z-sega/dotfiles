@@ -1313,6 +1313,8 @@ Visit the init.el file.
 ** Math
 #+BEGIN_SRC emacs-lisp
 
+  (setq org-preview-latex-default-process 'dvisvgm)
+
   (use-package org-fragtog)
 
   (add-hook 'org-mode-hook 'org-fragtog-mode)
