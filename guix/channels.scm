@@ -10,7 +10,7 @@
 
       (channel
        (name 'guix)
-       (url "https://codeberg.org/guix/guix.git")
+       (url "https://codeberg.org/guix/guix")
        (branch "master")
        (introduction
         (make-channel-introduction

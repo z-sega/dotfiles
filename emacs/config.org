@@ -635,7 +635,10 @@ Ensure =brew install gnu-sed=
   (use-package nhexl-mode)
 
   (use-package exec-path-from-shell
-    :config (exec-path-from-shell-initialize))
+    :ensure nil
+    :config
+    (setq exec-path-from-shell-arguments '("-l" "-i"))
+    (exec-path-from-shell-initialize))
 
   (use-package expand-region
     :bind (("C-=" . er/expand-region)
@@ -1106,7 +1109,9 @@ Ensure =brew install gnu-sed=
   (use-package org-roam-ui
     :after org-roam
     :commands org-roam-ui-mode
-    :diminish org-roam-ui-mode)
+    :diminish org-roam-ui-mode
+    :config
+    (setq org-roam-ui-open-on-start nil))
     
 #+END_SRC
 

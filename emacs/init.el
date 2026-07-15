@@ -42,7 +42,7 @@
 ;; Load saved customizations
 (setq custom-file
       (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
+(load custom-file 'noerror)
 ;; Warn about unsaved customizations when emacs is killed
 (add-hook 'kill-emacs-query-functions
           'custom-prompt-customize-unsaved-options)

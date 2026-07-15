@@ -26,6 +26,7 @@
 	 ;; desktop
 	 "waybar"
 	 "swaybg"
+	 "gtklock"
 	 "swaynotificationcenter"
 	 "xwayland-satellite"
 	 ;; lisp
@@ -36,28 +37,12 @@
 	 "fuzzel"
 	 ;; bluetooth
 	 "blueman"
-	 ;; music
-	 "spotifyd"
-	 ;; other packages management tools
+	 ;; other package management tools
 	 "flatpak"
 	 ;; web browsing
          "librewolf"
 	 "epiphany"
 	 ;; general utilities
-	 ;; -- latex
-	 "rubber"
-	 "texlive-scheme-basic"
-	 "texlive-latex-bin"
-	 "texlive-collection-latexrecommended"
-	 "texlive-collection-latexextra"
-	 "texlive-collection-fontsrecommended"
-	 "texlive-collection-mathscience"
-	 "texlive-babel"
-	 "texlive-dvipng"
-	 "texlive-dvisvgm"
-	 "texlive-tabularray"
-	 "texlive-texdoc"
-	 ;; --------
 	 "libnotify"
 	 "pulseaudio"
 	 "brightnessctl"
@@ -78,20 +63,26 @@
 	 "stow"
 	 ;; gnome
          "gnome-tweaks"
+	 "gnome-shell-extensions"
 	 "gnome-shell-extension-clipboard-indicator"
          "glibc-locales"
 	 ;; fonts
 	 "font-nerd-jetbrains-mono"
+	 "font-nerd-symbols"
 	 ;; literature
 	 "dictd"
 	 "book-sicp"
 	 ;; programming utilities
+	 ;; -- python
+	 "python-lsp-server"
+	 ;; -- c
+	 "clang-toolchain"
+	 ;; -- general
 	 "direnv"
 	 ;; mail
 	 "mu"
 	 "isync"
 	 ;; emacs packages
-	 ;; "emacs"
 	 "emacs-latex-extra"
 	 "emacs-envrc"
 	 "emacs-pinentry"
@@ -113,9 +104,12 @@
          "emacs-modus-themes"
          "emacs-org"
 	 "emacs-org-roam"
+	 "emacs-org-roam-ui"
 	 "emacs-org-remark"
 	 "emacs-org-pomodoro"
 	 "emacs-org-sticky-header"
+	 "emacs-org-texlive-collection"
+	 "emacs-org-fragtog"
          "emacs-gptel"
          "emacs-dape"
          "emacs-logview"
@@ -147,7 +141,6 @@
          "emacs-no-littering"
          "emacs-ement"
          "emacs-nov"
-         "emacs-org-fragtog"
          "emacs-corfu-doc"
          "emacs-vterm"
          "emacs-all-the-icons"
@@ -192,16 +185,16 @@
 		       (local-file ".bash_profile" "bash_profile")))))
 
 	   ;; Assumes emacs configs live in dotfiles too.
-	   (simple-service 'emacs-config
-			   home-xdg-configuration-files-service-type
-			   `(("emacs/.env" ,(local-file "../emacs/.env" "emacs-env"))
-			     ("emacs/early-init.el" ,(local-file "../emacs/early-init.el"))
-			     ("emacs/init.el" ,(local-file "../emacs/init.el"))
-			     ("emacs/config.el" ,(local-file "../emacs/config.el"))
-			     ("emacs/config.org" ,(local-file "../emacs/config.org"))
-			     ("emacs/linux.org" ,(local-file "../emacs/linux.org"))
-			     ("emacs/linux.el" ,(local-file "../emacs/linux.el"))
-			     ("emacs/custom.el" ,(local-file "../emacs/custom.el"))
-			     ("emacs/snippets" ,(local-file "../emacs/snippets" #:recursive? #t)))))
+	   (simple-service
+	    'emacs-config
+	    home-xdg-configuration-files-service-type
+	    `(("emacs/.env" ,(local-file "../emacs/.env" "emacs-env"))
+	      ("emacs/early-init.el" ,(local-file "../emacs/early-init.el"))
+	      ("emacs/init.el" ,(local-file "../emacs/init.el"))
+	      ("emacs/config.el" ,(local-file "../emacs/config.el"))
+	      ("emacs/config.org" ,(local-file "../emacs/config.org"))
+	      ("emacs/linux.org" ,(local-file "../emacs/linux.org"))
+	      ("emacs/linux.el" ,(local-file "../emacs/linux.el"))
+	      ("emacs/snippets" ,(local-file "../emacs/snippets" #:recursive? #t)))))
 
           %base-home-services)))
