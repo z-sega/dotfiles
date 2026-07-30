@@ -1294,6 +1294,14 @@ Using gptel for integration with LLM tools.
 #+END_SRC
 
 * Misc
+** Social
+#+BEGIN_SRC emacs-lisp
+
+  (use-package telega
+    :ensure nil)
+
+#+END_SRC
+
 ** Littering
 Visit the init.el file.
 

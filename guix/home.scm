@@ -23,18 +23,18 @@
  (packages
   (specifications->packages
    (list "xscreensaver"
-	 ;; desktop
+	 ;; desktop environment programs
 	 "waybar"
 	 "swaybg"
+	 "fuzzel"        ; app launcher
 	 "gtklock"
 	 "swaynotificationcenter"
 	 "xwayland-satellite"
 	 ;; lisp
 	 "sbcl"
+	 "artanis"
 	 "guile"
 	 "guile-colorized"
-	 ;; app launcher
-	 "fuzzel"
 	 ;; bluetooth
 	 "blueman"
 	 ;; other package management tools
@@ -43,6 +43,7 @@
          "librewolf"
 	 "epiphany"
 	 ;; general utilities
+	 "wl-color-picker"
 	 "libnotify"
 	 "pulseaudio"
 	 "brightnessctl"
@@ -62,9 +63,10 @@
          "git"
 	 "stow"
 	 ;; gnome
+	 "papers"
          "gnome-tweaks"
 	 "gnome-shell-extensions"
-	 "gnome-shell-extension-clipboard-indicator"
+	 "gnome-shell-extension-clipboard-indicator"	 
          "glibc-locales"
 	 ;; fonts
 	 "font-nerd-jetbrains-mono"
@@ -83,6 +85,7 @@
 	 "mu"
 	 "isync"
 	 ;; emacs packages
+	 "emacs-telega"
 	 "emacs-latex-extra"
 	 "emacs-envrc"
 	 "emacs-pinentry"
