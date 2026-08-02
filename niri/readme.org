@@ -1,0 +1,7 @@
+* Overview
+Remapped commands concerning workspaces and columns to be more Emacs/Vim
+like.
+
+workspaces are stacked over one another - nav with Mod+N/P (emacs)
+columns are stacked beside each other - nav with Mod+H/L (vim)
+windows are stacked over one another - nav with Mod+J/K (vim)
