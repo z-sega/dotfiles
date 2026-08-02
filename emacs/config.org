@@ -531,18 +531,16 @@ Star-eyes! 🤩
 
 #+BEGIN_SRC emacs-lisp
 
-  (use-package modus-themes)
-  
-  (use-package ef-themes)
+  (use-package modus-themes
+    :ensure nil)
 
-  (use-package doom-themes)
+  (use-package ef-themes
+    :ensure nil)
 
   (use-package circadian
     :config
-    (setq calendar-latitude 44.162758)
-    (setq calendar-longitude -77.383232)
-    ;(setq circadian-themes '((:sunrise . doom-moonlight)
-    ;                         (:sunset  . doom-monokai-pro)))
+    (setq calendar-latitude 44.255359)
+    (setq calendar-longitude -76.481560)
     (setq circadian-themes '((:sunrise . modus-operandi)
   			   (:sunset  . modus-operandi)))
     (circadian-setup))
