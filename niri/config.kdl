@@ -276,10 +276,12 @@ layout {
 
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "waybar"
+spawn-at-startup "sway-audio-idle-inhibit"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 spawn-sh-at-startup "swaybg -i ~/Pictures/simon-landrein/EFFONDRE_colo_01_2500.jpg"
+spawn-sh-at-startup "swayidle -w timeout 600 'brightnessctl -s set 10%' resume 'brightnessctl -r' timeout 900 'swaylock -f' before-sleep 'swaylock -f'"
 
 hotkey-overlay {
     // Uncomment this line to disable the "Important Hotkeys" pop-up at startup.
@@ -382,7 +384,7 @@ binds {
     Mod+E hotkey-overlay-title="Open Emacs" { spawn "emacsclient" "-c" "-a" ""; }
     Mod+T hotkey-overlay-title="Open a Terminal: kgx" { spawn "kgx"; }
     Mod+Space hotkey-overlay-title="Run an Application: rofi" { spawn "rofi" "-show" "combi" "-combi-modes" "window,drun,run" "-modes" "combi"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "gtklock"; }
+    Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "swaylock" "-f"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.

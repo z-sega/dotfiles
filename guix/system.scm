@@ -66,8 +66,8 @@
 
 	  (service screen-locker-service-type
 		   (screen-locker-configuration
-		    (name "gtklock")
-		    (program (file-append (specification->package "gtklock") "/bin/gtklock"))
+		    (name "swaylock")
+		    (program (file-append (specification->package "swaylock-effects") "/bin/swaylock"))
 		    (using-pam? #t)
 		    (using-setuid? #f))))
 

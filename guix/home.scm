@@ -18,8 +18,11 @@
   #:use-module (guix gexp))
 
 (define %desktop-packages
-  (list "waybar" "swaybg" "rofi" "gtklock" "swaynotificationcenter" "xwayland-satellite"
-	"wl-color-picker" "swayidle"))
+  (list "waybar"
+	"rofi"
+	"swaybg" "swaylock-effects" "swayidle" "sway-audio-idle-inhibit" "swaynotificationcenter"
+	"wl-color-picker"
+	"xwayland-satellite"))
 
 (define %lisp-packages
   (list "sbcl" "artanis" "guile" "guile-colorized"))
