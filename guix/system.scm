@@ -60,8 +60,16 @@
           ;; To configure OpenSSH, pass an 'openssh-configuration'
           ;; record as a second argument to 'service' below.
           (service openssh-service-type)
+
           (set-xorg-configuration
-           (xorg-configuration (keyboard-layout keyboard-layout))))
+           (xorg-configuration (keyboard-layout keyboard-layout)))
+
+	  (service screen-locker-service-type
+		   (screen-locker-configuration
+		    (name "gtklock")
+		    (program (file-append (specification->package "gtklock") "/bin/gtklock"))
+		    (using-pam? #t)
+		    (using-setuid? #f))))
 
     ;; This is the default list of services we
     ;; are appending to.

@@ -17,139 +17,137 @@
   #:use-module (gnu home services niri)
   #:use-module (guix gexp))
 
+(define %desktop-packages
+  (list "waybar" "swaybg" "rofi" "gtklock" "swaynotificationcenter" "xwayland-satellite"
+	"wl-color-picker" "swayidle"))
+
+(define %lisp-packages
+  (list "sbcl" "artanis" "guile" "guile-colorized"))
+
+(define %gnome-packages
+  (list "papers" "gnome-tweaks" "gnome-shell-extensions"
+	"gnome-shell-extension-clipboard-indicator" "glibc-locales"))
+
+(define %font-packages
+  (list "font-nerd-jetbrains-mono" "font-nerd-symbols"))
+
+(define %mail-packages
+  (list "mu" "isync"))
+
+(define %dev-utility-packages
+  (list "blueman"
+	"libnotify"
+	"pulseaudio"
+	"brightnessctl"
+	"meson"
+	"gnupg"
+	"pinentry"
+	"scrot"
+	"curl"
+	"rlwrap"
+	"ripgrep"
+	"tree"
+	"xterm"
+	"gcc-toolchain"
+	"xdot"
+	"cmake"
+	"nss-certs"
+	"git"
+	"stow"
+	"direnv"
+	"python-lsp-server"
+	"clang-toolchain"))
+
+(define %web-browsing-packages
+  (list "librewolf" "epiphany"))
+
+(define %literature-packages
+  (list "dictd" "book-sicp"))
+
+(define %package-management-packages
+  (list "flatpak"))
+
+(define %emacs-packages
+  (list "emacs-telega"
+	"emacs-latex-extra"
+	"emacs-envrc"
+	"emacs-pinentry"
+	"emacs-nerd-icons"
+	"emacs-sly-quicklisp"
+	"emacs-diredfl"
+	"emacs-geiser"
+	"emacs-geiser-guile"
+	"emacs-consult"
+	"emacs-dirvish"
+	"emacs-exec-path-from-shell"
+	"emacs-mct"
+	"emacs-guix"
+	"emacs-compat"
+	"emacs-rainbow-delimiters"
+	"emacs-biblio"
+	"emacs-speed-type"
+	"emacs-ef-themes"
+	"emacs-modus-themes"
+	"emacs-org"
+	"emacs-org-roam"
+	"emacs-org-roam-ui"
+	"emacs-org-remark"
+	"emacs-org-pomodoro"
+	"emacs-org-sticky-header"
+	"emacs-org-texlive-collection"
+	"emacs-org-fragtog"
+	"emacs-gptel"
+	"emacs-dape"
+	"emacs-logview"
+	"emacs-paredit"
+	"emacs-nhexl-mode"
+	"emacs-csv-mode"
+	"emacs-mmm-mode"
+	"emacs-jinja2-mode"
+	"emacs-haskell-mode"
+	"emacs-org-contrib"
+	"emacs-ob-racket"
+	"emacs-yasnippet-snippets"
+	"emacs-yasnippet"
+	"emacs-pyvenv"
+	"emacs-elm-mode"
+	"emacs-rustic"
+	"emacs-circadian"
+	"emacs-doom-themes"
+	"emacs-ligature"
+	"emacs-apheleia"
+	"emacs-magit"
+	"emacs-marginalia"
+	"emacs-orderless"
+	"emacs-vertico"
+	"emacs-minions"
+	"emacs-transient"
+	"emacs-cape"
+	"emacs-corfu"
+	"emacs-no-littering"
+	"emacs-ement"
+	"emacs-nov"
+	"emacs-corfu-doc"
+	"emacs-vterm"
+	"emacs-telega"
+	"emacs-embark"
+	"emacs-corfu-terminal"))
+
 (home-environment
  ;; Below is the list of packages that will show up in your
  ;; Home profile, under ~/.guix-home/profile.
  (packages
   (specifications->packages
-   (list "xscreensaver"
-	 ;; desktop environment programs
-	 "waybar"
-	 "swaybg"
-	 "fuzzel"        ; app launcher
-	 "gtklock"
-	 "swaynotificationcenter"
-	 "xwayland-satellite"
-	 ;; lisp
-	 "sbcl"
-	 "artanis"
-	 "guile"
-	 "guile-colorized"
-	 ;; bluetooth
-	 "blueman"
-	 ;; other package management tools
-	 "flatpak"
-	 ;; web browsing
-         "librewolf"
-	 "epiphany"
-	 ;; general utilities
-	 "wl-color-picker"
-	 "libnotify"
-	 "pulseaudio"
-	 "brightnessctl"
-	 "meson"
-	 "gnupg"
-	 "pinentry"
-	 "scrot"
-	 "curl"
-	 "rlwrap"
-	 "ripgrep"
-	 "tree"
-	 "xterm"
-	 "gcc-toolchain"
-	 "xdot"
-         "cmake"
-	 "nss-certs"
-         "git"
-	 "stow"
-	 ;; gnome
-	 "papers"
-         "gnome-tweaks"
-	 "gnome-shell-extensions"
-	 "gnome-shell-extension-clipboard-indicator"	 
-         "glibc-locales"
-	 ;; fonts
-	 "font-nerd-jetbrains-mono"
-	 "font-nerd-symbols"
-	 ;; literature
-	 "dictd"
-	 "book-sicp"
-	 ;; programming utilities
-	 ;; -- python
-	 "python-lsp-server"
-	 ;; -- c
-	 "clang-toolchain"
-	 ;; -- general
-	 "direnv"
-	 ;; mail
-	 "mu"
-	 "isync"
-	 ;; emacs packages
-	 "emacs-telega"
-	 "emacs-latex-extra"
-	 "emacs-envrc"
-	 "emacs-pinentry"
-	 "emacs-nerd-icons"
-         "emacs-sly-quicklisp"
-         "emacs-diredfl"
-         "emacs-geiser"
-	 "emacs-geiser-guile"
-         "emacs-consult"
-         "emacs-dirvish"
-         "emacs-exec-path-from-shell"
-         "emacs-mct"
-         "emacs-guix"
-         "emacs-compat"
-         "emacs-rainbow-delimiters"
-         "emacs-biblio"
-         "emacs-speed-type"
-         "emacs-ef-themes"
-         "emacs-modus-themes"
-         "emacs-org"
-	 "emacs-org-roam"
-	 "emacs-org-roam-ui"
-	 "emacs-org-remark"
-	 "emacs-org-pomodoro"
-	 "emacs-org-sticky-header"
-	 "emacs-org-texlive-collection"
-	 "emacs-org-fragtog"
-         "emacs-gptel"
-         "emacs-dape"
-         "emacs-logview"
-         "emacs-paredit"
-         "emacs-nhexl-mode"
-         "emacs-csv-mode"
-         "emacs-mmm-mode"
-         "emacs-jinja2-mode"
-         "emacs-haskell-mode"
-         "emacs-org-contrib"
-         "emacs-ob-racket"
-         "emacs-yasnippet-snippets"
-         "emacs-yasnippet"
-         "emacs-pyvenv"
-         "emacs-elm-mode"
-         "emacs-rustic"
-         "emacs-circadian"
-         "emacs-doom-themes"
-         "emacs-ligature"
-         "emacs-apheleia"
-         "emacs-magit"
-         "emacs-marginalia"
-         "emacs-orderless"
-         "emacs-vertico"
-         "emacs-minions"
-         "emacs-transient"
-         "emacs-cape"
-         "emacs-corfu"
-         "emacs-no-littering"
-         "emacs-ement"
-         "emacs-nov"
-         "emacs-corfu-doc"
-         "emacs-vterm"
-         "emacs-all-the-icons"
-         "emacs-telega"
-         "emacs-embark"
-         "emacs-corfu-terminal")))
+   (append %desktop-packages
+	   %lisp-packages
+	   %gnome-packages
+	   %font-packages
+	   %mail-packages
+	   %dev-utility-packages
+	   %web-browsing-packages
+	   %literature-packages
+	   %package-management-packages
+	   %emacs-packages)))
 
  ;; Below is the list of Home services.  To search for available
  ;; services, run 'guix home search KEYWORD' in a terminal.

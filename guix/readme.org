@@ -1,0 +1,32 @@
+* System
+The guix system configuration file is =./system.scm=
+
+At this point there is a problem with the wifi driver on the newer
+version of the linux kernel, so the =guix time-machine= was used to
+pin the kernel to version 7.0.11.
+
+The command to build (and test the build of) the newer configurations is as follows:
+#+BEGIN_SRC sh
+
+  sudo system build ~/dotfiles/guix/system.scm
+  # without pinning the channels at their respective commits
+
+  sudo guix time-machine -C ~/dotfiles/guix/channels.scm -- system build ~/dotfiles/guix/system.scm
+  # where channels is the value of the channel dependencies at some commit
+
+#+END_SRC
+
+The command to run to reconfigure the guix system is as follows:
+#+BEGIN_SRC sh
+
+  sudo system reconfigure ~/dotfiles/guix/system.scm
+  # without pinning the channels at their respective commits
+
+  sudo guix time-machine -C ~/dotfiles/guix/channels.scm -- system reconfigure ~/dotfiles/guix/system.scm
+  # where channels is the value of the channel dependencies at some commit
+
+#+END_SRC
+
+* Home
+
+* Channels
