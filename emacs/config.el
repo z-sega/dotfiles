@@ -4,7 +4,7 @@
 (use-package yasnippet
   :config
   (setq yas-snippet-dirs
-	 (list (expand-file-name "snippets/" user-emacs-directory)))
+	(list (expand-file-name "snippets/" user-emacs-directory)))
   (yas-global-mode 1))
 
 (use-package corfu
@@ -64,7 +64,7 @@
   apheleia-global-mode
   :config
   (setf (alist-get 'black apheleia-formatters)
-      '("black" "-"))
+	'("black" "-"))
   (setf (alist-get 'prettier-json apheleia-formatters)
         '("prettier" "--stdin-filepath" filepath))
   (setf (alist-get 'prettier apheleia-formatters)
@@ -80,15 +80,15 @@
   (ligature-set-ligatures 't '("www"))
   ;; Enable ligatures in programming modes                                                           
   (ligature-set-ligatures 'prog-mode '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-                                   ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-                                   "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-                                   "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-                                   "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-                                   "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-                                   "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-                                   "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-                                   "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-                                   "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+                                       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+                                       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+                                       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+                                       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+                                       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+                                       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+                                       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+                                       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+                                       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
   (global-ligature-mode 't))
 
 (use-package transient)
@@ -110,10 +110,10 @@
 (setq auto-save-interval 20)
 
 (setq backup-by-copying t    ;; Don't clobber symlinks
-	delete-old-versions t  ;; Automatically delete excess backups
-	kept-new-versions 6    ;; Keep some recent backups
-	kept-old-versions 2    ;; Keep some old backups
-	version-control t)     ;; Use versioned backups
+      delete-old-versions t  ;; Automatically delete excess backups
+      kept-new-versions 6    ;; Keep some recent backups
+      kept-old-versions 2    ;; Keep some old backups
+      version-control t)     ;; Use versioned backups
 
 (defun read-env-variable (variable-name)
   "Read the value of VARIABLE-NAME from the .env file."
@@ -159,16 +159,16 @@
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
     (cons (format "[CRM%s] %s"
-		    (replace-regexp-in-string
-		     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-		     crm-separator)
-		    (car args))
-	    (cdr args)))
+		  (replace-regexp-in-string
+		   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+		   crm-separator)
+		  (car args))
+	  (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
-	  '(read-only t cursor-intangible t face minibuffer-prompt))
+	'(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
 (use-package vertico
@@ -195,7 +195,7 @@
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-		("M-A" . marginalia-cycle))
+	      ("M-A" . marginalia-cycle))
 
   ;; The :init section is always executed.
   :init
@@ -211,57 +211,57 @@
 (use-package consult
   ;; Replace bindings. Lazily loaded by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
-	   ("C-c M-x" . consult-mode-command)
-	   ("C-c h" . consult-history)
-	   ("C-c k" . consult-kmacro)
-	   ("C-c m" . consult-man)
-	   ("C-c i" . consult-info)
-	   ([remap Info-search] . consult-info)
-	   ;; C-x bindings in `ctl-x-map'
-	   ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-	   ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-	   ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-	   ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-	   ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
-	   ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-	   ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-	   ;; Custom M-# bindings for fast register access
-	   ("M-#" . consult-register-load)
-	   ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-	   ("C-M-#" . consult-register)
-	   ;; Other custom bindings
-	   ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-	   ;; M-g bindings in `goto-map'
-	   ("M-g e" . consult-compile-error)
-	   ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-	   ("M-g g" . consult-goto-line)             ;; orig. goto-line
-	   ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-	   ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-	   ("M-g m" . consult-mark)
-	   ("M-g k" . consult-global-mark)
-	   ("M-g i" . consult-imenu)
-	   ("M-g I" . consult-imenu-multi)
-	   ;; M-s bindings in `search-map'
-	   ("M-s d" . consult-find)                  ;; Alternative: consult-fd
-	   ("M-s c" . consult-locate)
-	   ("M-s g" . consult-grep)
-	   ("M-s G" . consult-git-grep)
-	   ("M-s r" . consult-ripgrep)
-	   ("M-s l" . consult-line)
-	   ("M-s L" . consult-line-multi)
-	   ("M-s k" . consult-keep-lines)
-	   ("M-s u" . consult-focus-lines)
-	   ;; Isearch integration
-	   ("M-s e" . consult-isearch-history)
-	   :map isearch-mode-map
-	   ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-	   ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-	   ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-	   ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-	   ;; Minibuffer history
-	   :map minibuffer-local-map
-	   ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-	   ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+	 ("C-c M-x" . consult-mode-command)
+	 ("C-c h" . consult-history)
+	 ("C-c k" . consult-kmacro)
+	 ("C-c m" . consult-man)
+	 ("C-c i" . consult-info)
+	 ([remap Info-search] . consult-info)
+	 ;; C-x bindings in `ctl-x-map'
+	 ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+	 ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+	 ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+	 ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+	 ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+	 ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+	 ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+	 ;; Custom M-# bindings for fast register access
+	 ("M-#" . consult-register-load)
+	 ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+	 ("C-M-#" . consult-register)
+	 ;; Other custom bindings
+	 ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+	 ;; M-g bindings in `goto-map'
+	 ("M-g e" . consult-compile-error)
+	 ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+	 ("M-g g" . consult-goto-line)             ;; orig. goto-line
+	 ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+	 ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+	 ("M-g m" . consult-mark)
+	 ("M-g k" . consult-global-mark)
+	 ("M-g i" . consult-imenu)
+	 ("M-g I" . consult-imenu-multi)
+	 ;; M-s bindings in `search-map'
+	 ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+	 ("M-s c" . consult-locate)
+	 ("M-s g" . consult-grep)
+	 ("M-s G" . consult-git-grep)
+	 ("M-s r" . consult-ripgrep)
+	 ("M-s l" . consult-line)
+	 ("M-s L" . consult-line-multi)
+	 ("M-s k" . consult-keep-lines)
+	 ("M-s u" . consult-focus-lines)
+	 ;; Isearch integration
+	 ("M-s e" . consult-isearch-history)
+	 :map isearch-mode-map
+	 ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+	 ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+	 ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+	 ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+	 ;; Minibuffer history
+	 :map minibuffer-local-map
+	 ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+	 ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
   ;; Enable automatic preview at point in the *Completions* buffer. This is
   ;; relevant when you use the default completion UI.
@@ -279,7 +279,7 @@
 
   ;; Use Consult to select xref locations with preview
   (setq xref-show-xrefs-function #'consult-xref
-	  xref-show-definitions-function #'consult-xref)
+	xref-show-definitions-function #'consult-xref)
 
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
@@ -296,8 +296,8 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep consult-man
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
 
@@ -326,9 +326,9 @@
   :config
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
-		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		   nil
-		   (window-parameters (mode-line-format . nil))))) ;; none
+	       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		 nil
+		 (window-parameters (mode-line-format . nil))))) ;; none
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
@@ -402,8 +402,6 @@
   :config
   (setq calendar-latitude 44.162758)
   (setq calendar-longitude -77.383232)
-  ;(setq circadian-themes '((:sunrise . doom-moonlight)
-  ;                         (:sunset  . doom-monokai-pro)))
   (setq circadian-themes '((:sunrise . modus-operandi)
 			   (:sunset  . modus-operandi)))
   (circadian-setup))
@@ -686,9 +684,6 @@ Returns either nil, or the position of the first null byte."
   (tide-hl-identifier-mode +1)
   (corfu-mode +1))
 
-;; aligns annotation to the right hand side
-; (setq company-tooltip-align-annotations t)
-
 ;; formats the buffer before saving
 (add-hook 'before-save-hook 'tide-format-before-save)
 
@@ -700,10 +695,8 @@ Returns either nil, or the position of the first null byte."
 (add-hook 'tsx-ts-mode-hook #'setup-tide-mode)
 
 (setq gc-cons-threshold (* 100 1024 1024)
-	read-process-output-max (* 1024 1024)
-	;company-idle-delay 0.0
-	;company-minimum-prefix-length 1
-	create-lockfiles nil)
+      read-process-output-max (* 1024 1024)
+      create-lockfiles nil)
 
 (with-eval-after-load 'js
   (define-key js-mode-map (kbd "M-.") nil))
@@ -761,7 +754,7 @@ Returns either nil, or the position of the first null byte."
 (use-package ob-racket
   :config
   (add-hook 'ob-racket-pre-runtime-library-load-hook
-	      #'ob-racket-raco-make-runtime-library))
+	    #'ob-racket-raco-make-runtime-library))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -779,8 +772,8 @@ Returns either nil, or the position of the first null byte."
    (concat "${title:*} "
            (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-dailies-capture-templates
-  '(("d" "default" entry "* %<%I:%M %p>: %?"
-     :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+   '(("d" "default" entry "* %<%I:%M %p>: %?"
+      :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
   (org-roam-capture-templates
    '(("d" "default" plain
       "%?"
@@ -800,10 +793,10 @@ Returns either nil, or the position of the first null byte."
    :map org-mode-map
    ("C-M-i" . completion-at-point)
    :map org-roam-dailies-map
-     ("Y" . org-roam-dailies-capture-yesterday)
-     ("T" . org-roam-dailies-capture-tomorrow)
-     ("v" . org-roam-dailies-goto-date)
-     ("c" . org-roam-dailies-capture-date))
+   ("Y" . org-roam-dailies-capture-yesterday)
+   ("T" . org-roam-dailies-capture-tomorrow)
+   ("v" . org-roam-dailies-goto-date)
+   ("c" . org-roam-dailies-capture-date))
   :bind-keymap
   ("C-c n d". org-roam-dailies-map)
   :config
@@ -816,7 +809,7 @@ Returns either nil, or the position of the first null byte."
   :diminish org-roam-ui-mode)
 
 (defun zsega-org-skip-subtree-if-priority (priority)
-    "Skip an agenda subtree if it has a priority of PRIORITY.
+  "Skip an agenda subtree if it has a priority of PRIORITY.
 
 PRIORITY may be one of the characters ?A, ?B, or ?C."
   (let ((subtree-end (save-excursion (org-end-of-subtree t)))
@@ -836,16 +829,16 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 (add-to-list 'org-modules 'org-habit t)
 
 (setq org-agenda-custom-commands
-    '(("d" "Daily agenda and all TODOs"
-       ((tags "PRIORITY=\"A\""
-              ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-               (org-agenda-overriding-header "High-priority unfinished tasks:")))
-        (agenda "" ((org-agenda-ndays 1)))
-        (alltodo ""
-                 ((org-agenda-skip-function '(or (zsega-org-skip-subtree-if-habit)
-                                                 (zsega-org-skip-subtree-if-priority ?A)
-                                                 (org-agenda-skip-if nil '(scheduled deadline))))
-                  (org-agenda-overriding-header "ALL normal priority tasks:")))))))
+      '(("d" "Daily agenda and all TODOs"
+	 ((tags "PRIORITY=\"A\""
+		((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		 (org-agenda-overriding-header "High-priority unfinished tasks:")))
+          (agenda "" ((org-agenda-ndays 1)))
+          (alltodo ""
+                   ((org-agenda-skip-function '(or (zsega-org-skip-subtree-if-habit)
+                                                   (zsega-org-skip-subtree-if-priority ?A)
+                                                   (org-agenda-skip-if nil '(scheduled deadline))))
+                    (org-agenda-overriding-header "ALL normal priority tasks:")))))))
 
 (require 'org-pomodoro)
 
@@ -880,8 +873,8 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 			:stream t))
   ;; available
   (gptel-make-deepseek "DeepSeek"
-		       :stream t
-		       :key (read-env-variable "DEEPSEEK_API_KEY")))
+    :stream t
+    :key (read-env-variable "DEEPSEEK_API_KEY")))
 
 (setq gnus-select-method '(nnimap "imap.gmail.com"
 				  (nnimap-stream starttls)
@@ -932,12 +925,12 @@ PRIORITY may be one of the characters ?A, ?B, or ?C."
 (add-to-list
  'mu4e-header-info-custom
  '(:recipnum . (:name "Number of recipients"                  ;; long name, seen in message-view
-                :shortname "Recip#"                           ;; short name, seen in headers-view
-     	          :help "Number of recipients for this message" ;; tooltip
-		:function (lambda (msg)
-			    (format "%d"
-				    (+ (length (mu4e-message-field msg :to))
-				       (length (mu4e-message-field msg :cc))))))))
+                      :shortname "Recip#"                           ;; short name, seen in headers-view
+     	              :help "Number of recipients for this message" ;; tooltip
+		      :function (lambda (msg)
+				  (format "%d"
+					  (+ (length (mu4e-message-field msg :to))
+					     (length (mu4e-message-field msg :cc))))))))
 
 (setq mu4e-headers-fields
       '((:human-date . 12)

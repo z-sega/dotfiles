@@ -28,5 +28,25 @@ The command to run to reconfigure the guix system is as follows:
 #+END_SRC
 
 * Home
+** Emacs Daemon under Shepherd
+Not sure if this has any effect at all, since checking the status shows failure:
+#+BEGIN_SRC text
+
+  ~/dotfiles $ herd status emacs
+  ● Status of emacs:
+  It is stopped since 09:13:02 AM (15 minutes ago).
+  Process exited with code 1.
+  It is disabled.
+  Provides: emacs
+  Will be respawned.
+  Last respawned on 09:13:02 AM (15 minutes ago).
+  Latest exits:
+  - 2026-08-04 09:13:02  Process exited with code 1.
+  - 2026-08-04 09:13:02  Process exited with code 1.
+  - 2026-08-04 09:13:02  Process exited with code 1.
+  - 2026-08-04 09:13:02  Process exited with code 1.
+  - 2026-08-04 09:13:02  Process exited with code 1.
+
+#+END_SRC
 
 * Channels

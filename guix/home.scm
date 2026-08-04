@@ -15,6 +15,7 @@
   #:use-module (gnu home services shells)
   #:use-module (gnu home services gnupg)
   #:use-module (gnu home services niri)
+  #:use-module (gnu home services shepherd)
   #:use-module (guix gexp))
 
 (define %desktop-packages
@@ -164,6 +165,19 @@
 		      (file-append pinentry-emacs "/bin/pinentry-emacs"))
 		     (ssh-support? #t)))
 
+	   (simple-service
+	    'emacs-daemon
+	    home-shepherd-service-type
+	    (list (shepherd-service
+		   (provision '(emacs))
+		   (documentation "Emacs daemon for emacsclient.")
+		   (start #~(make-forkexec-constructor
+			     (list #$(file-append emacs "/bin/emacs") "--fg-daemon")
+			     #:log-file (string-append (getenv "HOME")
+						       "/.local/state/emacs-daemon.log")))
+		   (stop #~(make-kill-destructor))
+		   (respawn? #t))))
+
 	   (service home-bash-service-type
                     (home-bash-configuration
                      (aliases '(("grep" . "grep --color=auto")
@@ -188,6 +202,7 @@
 			"export XDG_DATA_DIRS=\"$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share\"\n")
 		       (local-file ".bash_profile" "bash_profile")))))
 
+	   ;; Assumes niri configs live in dotfiles too.
 	   (simple-service
 	    'niri-config
 	    home-xdg-configuration-files-service-type
