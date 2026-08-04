@@ -440,6 +440,9 @@ binds {
     Mod+Ctrl+K     { move-window-up; }
     Mod+Ctrl+L     { move-column-right; }
 
+    Mod+Shift+H  { spawn-sh "niri msg action focus-column-left; niri msg action focus-column-left"; }
+    Mod+Shift+L { spawn-sh "niri msg action focus-column-right; niri msg action focus-column-right"; }
+
     // Alternative commands that move across workspaces when reaching
     // the first or last window in a column.
     // Mod+J     { focus-window-or-workspace-down; }
@@ -456,10 +459,10 @@ binds {
     Mod+Shift+Down  { focus-monitor-down; }
     Mod+Shift+Up    { focus-monitor-up; }
     Mod+Shift+Right { focus-monitor-right; }
-    Mod+Shift+H     { focus-monitor-left; }
+    //Mod+Shift+H     { focus-monitor-left; }
     Mod+Shift+J     { focus-monitor-down; }
     Mod+Shift+K     { focus-monitor-up; }
-    Mod+Shift+L     { focus-monitor-right; }
+    //Mod+Shift+L     { focus-monitor-right; }
 
     Mod+Shift+Ctrl+Left  { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+Down  { move-column-to-monitor-down; }
