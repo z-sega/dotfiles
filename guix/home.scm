@@ -12,10 +12,10 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnome)
   #:use-module (gnu home services)
+  #:use-module (gnu home services desktop)
   #:use-module (gnu home services shells)
   #:use-module (gnu home services gnupg)
   #:use-module (gnu home services niri)
-  #:use-module (gnu home services shepherd)
   #:use-module (guix gexp))
 
 (define %desktop-packages
@@ -37,6 +37,9 @@
 
 (define %mail-packages
   (list "mu" "isync"))
+
+(define %general-utility-packages
+  (list "libreoffice" "redshift" "librewolf" "epiphany"))
 
 (define %dev-utility-packages
   (list "blueman"
@@ -61,9 +64,6 @@
 	"direnv"
 	"python-lsp-server"
 	"clang-toolchain"))
-
-(define %web-browsing-packages
-  (list "librewolf" "epiphany"))
 
 (define %literature-packages
   (list "dictd" "book-sicp"))
@@ -148,7 +148,7 @@
 	   %font-packages
 	   %mail-packages
 	   %dev-utility-packages
-	   %web-browsing-packages
+	   %general-utility-packages
 	   %literature-packages
 	   %package-management-packages
 	   %emacs-packages)))
@@ -165,18 +165,11 @@
 		      (file-append pinentry-emacs "/bin/pinentry-emacs"))
 		     (ssh-support? #t)))
 
-	   (simple-service
-	    'emacs-daemon
-	    home-shepherd-service-type
-	    (list (shepherd-service
-		   (provision '(emacs))
-		   (documentation "Emacs daemon for emacsclient.")
-		   (start #~(make-forkexec-constructor
-			     (list #$(file-append emacs "/bin/emacs") "--fg-daemon")
-			     #:log-file (string-append (getenv "HOME")
-						       "/.local/state/emacs-daemon.log")))
-		   (stop #~(make-kill-destructor))
-		   (respawn? #t))))
+	   (service home-redshift-service-type
+		    (home-redshift-configuration
+		     (location-provider 'manual)
+		     (latitude 44.25)
+		     (longitude -76.48)))
 
 	   (service home-bash-service-type
                     (home-bash-configuration
