@@ -195,13 +195,17 @@
 			"export XDG_DATA_DIRS=\"$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share\"\n")
 		       (local-file ".bash_profile" "bash_profile")))))
 
-	   ;; Assumes niri configs live in dotfiles too.
+	   ;; Assuming configs live in dotfiles too.
+	   (simple-service
+	    'rofi-config
+	    home-xdg-configuration-files-service-type
+	    `(("rofi/config.rasi" ,(local-file "../rofi/config.rasi"))))
+
 	   (simple-service
 	    'niri-config
 	    home-xdg-configuration-files-service-type
 	    `(("niri/config.kdl" ,(local-file "../niri/config.kdl"))))
 
-	   ;; Assumes emacs configs live in dotfiles too.
 	   (simple-service
 	    'emacs-config
 	    home-xdg-configuration-files-service-type
