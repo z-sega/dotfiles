@@ -25,6 +25,12 @@
 	"wl-color-picker"
 	"xwayland-satellite"))
 
+(define %python-packages
+  (list "python" "python-lsp-server"))
+
+(define %c-packages
+  (list "clang-toolchain"))
+
 (define %lisp-packages
   (list "sbcl" "artanis" "guile" "guile-colorized"))
 
@@ -61,9 +67,7 @@
 	"nss-certs"
 	"git"
 	"stow"
-	"direnv"
-	"python-lsp-server"
-	"clang-toolchain"))
+	"direnv"))
 
 (define %literature-packages
   (list "dictd" "book-sicp"))
@@ -143,6 +147,8 @@
  (packages
   (specifications->packages
    (append %desktop-packages
+	   %c-packages
+	   %python-packages
 	   %lisp-packages
 	   %gnome-packages
 	   %font-packages

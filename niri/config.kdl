@@ -383,7 +383,7 @@ binds {
     // Suggested binds for running programs: terminal, app launcher, screen locker.
     Mod+E hotkey-overlay-title="Open Emacs" { spawn "emacsclient" "-c" "-a" ""; }
     Mod+T hotkey-overlay-title="Open a Terminal: kgx" { spawn "kgx"; }
-    Mod+Space hotkey-overlay-title="Run an Application: rofi" { spawn "rofi" "-show" "combi" "-combi-modes" "window,drun,run" "-modes" "combi"; }
+    Mod+Space hotkey-overlay-title="Run an Application: rofi" { spawn "rofi" "-show" "combi" "-combi-modes" "window,drun,run,ssh" "-modes" "combi"; }
     Super+Alt+L hotkey-overlay-title="Lock the Screen" { spawn "swaylock" "-f"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
