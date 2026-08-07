@@ -16,7 +16,38 @@
   #:use-module (gnu home services shells)
   #:use-module (gnu home services gnupg)
   #:use-module (gnu home services niri)
-  #:use-module (guix gexp))
+  #:use-module (guix gexp)
+  #:use-module (guix inferior)
+  #:use-module (guix channels)
+  #:use-module (srfi srfi-1))
+
+(define old-channels
+  (list (channel
+	  (name 'nonguix)
+	  (url "https://gitlab.com/nonguix/nonguix")
+	  (branch "master")
+	  (commit "7b7b2c47f9c205ad89ddf54293e7756e797f8980")
+	  (introduction
+	   (make-channel-introduction
+            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+            (openpgp-fingerprint
+	     "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+	(channel
+	  (name 'guix)
+	  (url "https://codeberg.org/guix/guix")
+	  (branch "master")
+	  (commit "9da2be5a1f5818c3d6b757d1cc4113b8187c9d65")
+	  (introduction
+	   (make-channel-introduction
+	    "9edb3f66fd807b096b48283debdcddccfea34bad"
+	    (openpgp-fingerprint
+	     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))))
+
+(define inferior
+  (inferior-for-channels old-channels))
+
+(define pinned-libreoffice
+  (first (lookup-inferior-packages inferior "libreoffice")))
 
 (define %desktop-packages
   (list "waybar"
@@ -39,13 +70,18 @@
 	"gnome-shell-extension-clipboard-indicator" "glibc-locales"))
 
 (define %font-packages
-  (list "font-nerd-jetbrains-mono" "font-nerd-symbols"))
+  (list "font-nerd-jetbrains-mono"
+	"font-nerd-symbols"
+	"font-awesome"
+	"font-awesome-nonfree"
+	"font-monaspace"
+	"font-openmoji"))
 
 (define %mail-packages
   (list "mu" "isync"))
 
 (define %general-utility-packages
-  (list "libreoffice" "redshift" "librewolf" "epiphany"))
+  (list "redshift" "librewolf" "epiphany" "secrets"))
 
 (define %dev-utility-packages
   (list "blueman"
@@ -145,19 +181,21 @@
  ;; Below is the list of packages that will show up in your
  ;; Home profile, under ~/.guix-home/profile.
  (packages
-  (specifications->packages
-   (append %desktop-packages
-	   %c-packages
-	   %python-packages
-	   %lisp-packages
-	   %gnome-packages
-	   %font-packages
-	   %mail-packages
-	   %dev-utility-packages
-	   %general-utility-packages
-	   %literature-packages
-	   %package-management-packages
-	   %emacs-packages)))
+  (append
+   (list pinned-libreoffice)
+   (specifications->packages
+    (append %desktop-packages
+	    %c-packages
+	    %python-packages
+	    %lisp-packages
+	    %gnome-packages
+	    %font-packages
+	    %mail-packages
+	    %general-utility-packages
+	    %dev-utility-packages
+	    %literature-packages
+	    %package-management-packages
+	    %emacs-packages))))
 
  ;; Below is the list of Home services.  To search for available
  ;; services, run 'guix home search KEYWORD' in a terminal.
