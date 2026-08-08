@@ -197,21 +197,6 @@ Visit init.el to see how this connects with no-littering
 
 #+END_SRC
 
-** Utilities
-*** Read Variables from .env
-#+BEGIN_SRC emacs-lisp
-
-  (defun read-env-variable (variable-name)
-    "Read the value of VARIABLE-NAME from the .env file."
-    (with-temp-buffer
-      ;; CHANGED: Point to home directory independent of the OS username
-      (insert-file-contents (expand-file-name ".env" user-emacs-directory))
-      (goto-char (point-min))
-      (when (re-search-forward (concat "^" (regexp-quote variable-name) "=\\(.+\\)") nil t)
-        (match-string 1))))
-
-#+END_SRC
-
 * Window Management
 ** Modeline
 Keep the modeline:
@@ -1180,14 +1165,15 @@ Using gptel for integration with LLM tools.
     (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user\n\n")
     (setf (alist-get 'org-mode gptel-response-prefix-alist) "@assistant\n\n")
     ;; default model
-    (setq gptel-model 'gemini-2.5-pro-exp-03-25
-  	gptel-backend (gptel-make-gemini "Gemini"
-  			:key (read-env-variable "GEMINI_API_KEY")
+    (setq gptel-model 'Deepseek:deepseek-chat
+  	gptel-backend (gptel-make-deepseek "Deepseek"
+  			:key (lambda () (auth-source-pick-first-password :host "api.deepseek.com"))
   			:stream t))
     ;; available
-    (gptel-make-deepseek "DeepSeek"
-  		       :stream t
-  		       :key (read-env-variable "DEEPSEEK_API_KEY")))
+    (gptel-make-anthropic
+        "Claude"
+      :key (lambda () (auth-source-pick-first-password :host "api.anthropic.com"))
+      :stream t))
 
  #+END_SRC
 

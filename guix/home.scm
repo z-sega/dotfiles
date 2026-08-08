@@ -253,8 +253,7 @@
 	   (simple-service
 	    'emacs-config
 	    home-xdg-configuration-files-service-type
-	    `(("emacs/.env" ,(local-file "../emacs/.env" "emacs-env"))
-	      ("emacs/early-init.el" ,(local-file "../emacs/early-init.el"))
+	    `(("emacs/early-init.el" ,(local-file "../emacs/early-init.el"))
 	      ("emacs/init.el" ,(local-file "../emacs/init.el"))
 	      ("emacs/config.el" ,(local-file "../emacs/config.el"))
 	      ("emacs/config.org" ,(local-file "../emacs/config.org"))
