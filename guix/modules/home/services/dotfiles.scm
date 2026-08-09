@@ -20,8 +20,9 @@
                    home-xdg-configuration-files-service-type
                    `(("emacs/early-init.el" ,(dotfile "emacs/early-init.el"))
                      ("emacs/init.el" ,(dotfile "emacs/init.el"))
-                     ("emacs/config.el" ,(dotfile "emacs/config.el"))
-                     ("emacs/linux.el" ,(dotfile "emacs/linux.el"))
+		     ("emacs/modules" ,(local-file
+					(string-append dotfiles-root "/emacs/modules")
+					#:recursive? #t))
                      ("emacs/snippets" ,(local-file
                                          (string-append dotfiles-root "/emacs/snippets")
                                          #:recursive? #t))))))
