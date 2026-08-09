@@ -824,6 +824,26 @@ Ensure =brew install gnu-sed=
 #+END_SRC
 
 ** Language Specific
+*** Vue
+#+BEGIN_SRC emacs-lisp
+
+  (use-package mmm-mode
+    :ensure nil
+    :hook
+    (mmm-mode . (lambda ()
+  		(set-face-background 'mmm-default-submode-face nil))))
+
+  (add-to-list 'load-path (concat user-emacs-directory "vue-html-mode"))
+  (require 'vue-html-mode)
+
+  (add-to-list 'load-path (concat user-emacs-directory "ssass-mode"))
+  (require 'ssass-mode)
+
+  (add-to-list 'load-path (concat user-emacs-directory "vue-mode"))
+  (require 'vue-mode)
+
+#+END_SRC
+
 *** Rust
 [[https://robert.kra.hn/posts/rust-emacs-setup/][Rob's Rust Emacs Setup]]
 
@@ -853,9 +873,6 @@ Ensure =brew install gnu-sed=
   ;;   (setq pyvenv-post-deactivate-hooks
   ;; 	(list (lambda ()
   ;; 		(setq python-shell-interpreter "python3")))))
-
-  ;; (use-package python-mode
-  ;;   :custom (python-shell-interpreter "python3"))
 
 #+END_SRC
 
