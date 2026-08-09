@@ -9,10 +9,15 @@
 (define %c-packages
   (list "clang-toolchain"))
 
-(define %lisp-packages
-  (list "sbcl"
-	"artanis"
-	"guile-colorized"))
+(define %racket-packages
+  (list "racket"))
+
+(define %guile-packages
+  (list "guile-colorized"
+	"artanis"))
+
+(define %commonlisp-packages
+  (list "sbcl"))
 
 (define %literature-packages
   (list "dictd"
@@ -59,6 +64,7 @@
 	"emacs-mmm-mode"
 	"emacs-jinja2-mode"
 	"emacs-haskell-mode"
+	"emacs-racket-mode"
 	"emacs-org-contrib"
 	"emacs-ob-racket"
 	"emacs-yasnippet-snippets"
@@ -113,7 +119,9 @@
   (append %literature-packages
 	  %python-packages
 	  %c-packages
-	  %lisp-packages
+	  %racket-packages
+	  %guile-packages
+	  %commonlisp-packages
 	  %package-management-packages
 	  %emacs-packages
 	  %dev-utility-packages))
