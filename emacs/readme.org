@@ -1,0 +1,4 @@
+* Overview
+This Emacs configuration is modular. Most configurations and
+associated packages are written in appropriately named
+=modules/init-*.el= files for =init.el= to load and =(require *)=.
