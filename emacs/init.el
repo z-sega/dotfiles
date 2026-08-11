@@ -15,7 +15,6 @@
 ;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
-
 ;; Force litter to XDG config directory
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "backup/" user-emacs-directory))))
@@ -41,17 +40,6 @@
 (require 'init-messages)
 (require 'init-misc)
 (require 'init-snippets)
-
-;; Use latest org-mode. Do this early, to use when loading config
-;; (use-package org
-;;   :ensure nil
-;;   :mode ("\\.org\\'" . org-mode))
-
-;; Load main emacs config.org
-;; (org-babel-load-file
-;;  (expand-file-name "linux.org" user-emacs-directory))
-;; (org-babel-load-file
-;;  (expand-file-name "config.org" user-emacs-directory))
 
 ;; Load saved customizations
 (setq custom-file

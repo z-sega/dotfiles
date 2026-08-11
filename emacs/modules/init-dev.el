@@ -219,6 +219,10 @@
 (add-to-list 'load-path (concat user-emacs-directory "vue-mode"))
 (require 'vue-mode)
 
+;; Yuck
+(add-to-list 'load-path (concat user-emacs-directory "yuck-mode"))
+(require 'yuck-mode)
+
 ;; Rust
 (use-package rustic
   :config

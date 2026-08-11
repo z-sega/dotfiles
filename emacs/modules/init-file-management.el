@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
 (require 'dired)
 
 (setq insert-directory-program "ls" dired-use-ls-dired t)

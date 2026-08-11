@@ -2,31 +2,31 @@
 ;;; Commentary:
 
 ;;; Code:
-(use-package pinentry
-  :config
-  (pinentry-start))
-
-(use-package transient)
-(use-package compat)
-
 (setq auto-save-timeout 30)
 (setq auto-save-interval 20)
-
 (setq backup-by-copying t    ;; Don't clobber symlinks
       delete-old-versions t  ;; Automatically delete excess backups
       kept-new-versions 6    ;; Keep some recent backups
       kept-old-versions 2    ;; Keep some old backups
       version-control t)     ;; Use versioned backups
 
-(use-package minions
-  :config
-  (minions-mode 1))
-
 (global-set-key [remap list-buffers] 'ibuffer)
 (global-set-key (kbd "M-i") 'imenu)
 
 (global-set-key (kbd "M-o") 'other-window)
 (windmove-default-keybindings)
+
+(use-package pinentry
+  :config
+  (pinentry-start))
+
+(use-package transient)
+
+(use-package compat)
+
+(use-package minions
+  :config
+  (minions-mode 1))
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
@@ -66,24 +66,15 @@
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
 (use-package vertico
-  ;; :custom
-  ;; (vertico-scroll-margin 0) ;; Different scroll margin
-  ;; (vertico-count 20) ;; Show more candidates
-  ;; (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
-  ;; (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
   :init
   (vertico-mode))
 
 (use-package orderless
   :custom
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
-  ;; (orderless-component-separator #'orderless-escapable-split-on-space)
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
-;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
   ;; available in the *Completions* buffer, add it to the
@@ -91,12 +82,7 @@
   :bind (:map minibuffer-local-map
               ("M-A" . marginalia-cycle))
 
-  ;; The :init section is always executed.
   :init
-
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
   (marginalia-mode))
 
 (use-package mct)
@@ -230,9 +216,10 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package org-contrib)
+(use-package org-sticky-header)
+(add-hook 'org-mode-hook 'org-sticky-header-mode)
 
-;; (require 'ob-oz)
+(use-package org-contrib)
 
 (use-package ob-racket
   :config
@@ -242,9 +229,6 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((java . t)))
-
-(use-package org-sticky-header)
-(add-hook 'org-mode-hook 'org-sticky-header-mode)
 
 (use-package org-roam
   :init (setq org-roam-v2-ack t)
@@ -325,7 +309,7 @@
                                                    (org-agenda-skip-if nil '(scheduled deadline))))
                     (org-agenda-overriding-header "ALL normal priority tasks:")))))))
 
-(require 'org-pomodoro)
+(use-package org-pomodoro)
 
 (defun my/org-pomodoro-break-notification ()
   (start-process "pomodoro-notify" nil "notify-send"

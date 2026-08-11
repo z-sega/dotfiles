@@ -27,7 +27,8 @@
   (list "flatpak"))
 
 (define %emacs-packages
-  (list "emacs-telega"
+  (list "emacs-rg"
+	"emacs-telega"
 	"emacs-latex-extra"
 	"emacs-envrc"
 	"emacs-pinentry"
@@ -94,14 +95,8 @@
 	"emacs-corfu-terminal"))
 
 (define %dev-utility-packages
-  (list "blueman"
-	"libnotify"
-	"pulseaudio"
-	"brightnessctl"
-	"meson"
-	"gnupg"
+  (list "gnupg"
 	"pinentry"
-	"scrot"
 	"curl"
 	"rlwrap"
 	"ripgrep"
@@ -112,7 +107,6 @@
 	"cmake"
 	"nss-certs"
 	"git"
-	"stow"
 	"direnv"))
 
 (define %dev-packages

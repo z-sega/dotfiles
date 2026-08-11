@@ -17,7 +17,7 @@
   (setq calendar-latitude 44.255359)
   (setq calendar-longitude -76.481560)
   (setq circadian-themes '((:sunrise . modus-operandi)
-  			 (:sunset  . modus-operandi)))
+  			   (:sunset  . modus-operandi)))
   (circadian-setup))
 
 (use-package ligature
@@ -36,7 +36,6 @@
                                        "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
                                        "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
   (global-ligature-mode 't))
-
 
 (provide 'init-appearance)
 ;;; init-appearance.el ends here

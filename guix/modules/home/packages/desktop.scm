@@ -32,7 +32,13 @@
   (list "redshift"
 	"librewolf"
 	"epiphany"
-	"secrets"))
+	"secrets"
+	"blueman"
+	"libnotify"
+	"pavucontrol"
+	"pulseaudio"
+	"brightnessctl"
+	"playerctl"))
 
 (define %desktop-packages
   (append %desktop-environment-packages
