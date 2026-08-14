@@ -28,6 +28,7 @@
 
 (define %emacs-packages
   (list "emacs-rg"
+	"emacs-crux"
 	"emacs-telega"
 	"emacs-latex-extra"
 	"emacs-envrc"

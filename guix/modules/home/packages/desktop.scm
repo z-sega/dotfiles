@@ -38,7 +38,8 @@
 	"pavucontrol"
 	"pulseaudio"
 	"brightnessctl"
-	"playerctl"))
+	"playerctl"
+	"xdg-utils"))
 
 (define %desktop-packages
   (append %desktop-environment-packages

@@ -13,7 +13,6 @@
 (global-set-key [remap list-buffers] 'ibuffer)
 (global-set-key (kbd "M-i") 'imenu)
 
-(global-set-key (kbd "M-o") 'other-window)
 (windmove-default-keybindings)
 
 (use-package pinentry
@@ -23,6 +22,10 @@
 (use-package transient)
 
 (use-package compat)
+
+(use-package crux
+  :bind
+  ("C-c o" . crux-open-with))
 
 (use-package minions
   :config
