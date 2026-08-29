@@ -33,7 +33,7 @@
 	"glibc-locales"))
 
 (define %general-utility-packages
-  (list "redshift"
+  (list "redshift-wayland"
 	"librewolf"
 	"epiphany"
 	"secrets"

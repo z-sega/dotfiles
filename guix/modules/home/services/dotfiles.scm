@@ -10,6 +10,9 @@
     (local-file (string-append dotfiles-root "/" path)))
   
   (list
+   (simple-service 'redshift-config
+		   home-xdg-configuration-files-service-type
+		   `(("redshift/redshift.conf" ,(dotfile "redshift/redshift.conf"))))
    (simple-service 'rofi-config
                    home-xdg-configuration-files-service-type
                    `(("rofi/config.rasi" ,(dotfile "rofi/config.rasi"))))
