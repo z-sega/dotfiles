@@ -22,6 +22,7 @@
               '(("EDITOR" . "emacsclient -c")
                 ("VISUAL" . "emacsclient -c")
                 ("ALTERNATE_EDITOR" . "")
+		("PATH" . "$HOME/.nix-profile/bin:$PATH")
                 ("EMAIL" . "mail@ayoonipe.com")
                 ("XDG_DATA_DIRS" . "$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share")))
              (bashrc

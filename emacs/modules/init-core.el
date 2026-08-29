@@ -233,6 +233,8 @@
  'org-babel-load-languages
  '((java . t)))
 
+(use-package org-download)
+
 (use-package org-roam
   :init (setq org-roam-v2-ack t)
   :custom

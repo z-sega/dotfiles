@@ -2,12 +2,16 @@
 ;;; Commentary:
 
 ;;; Code:
+(use-package lorem-ipsum
+  :config
+  (lorem-ipsum-use-default-bindings))
+
 (use-package speed-type)
 
 (use-package biblio)
 
 ;; Ensure =brew install gnu-sed=
-(setq Man-sed-command "sed")
+;; (setq Man-sed-command "sed")
 
 (provide 'init-misc)
 ;;; init-misc.el ends here

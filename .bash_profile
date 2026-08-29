@@ -20,4 +20,3 @@ eval "$(guix package --search-paths \
 
 # Prepend setuid programs.
 export PATH=/run/setuid-programs:$PATH
-

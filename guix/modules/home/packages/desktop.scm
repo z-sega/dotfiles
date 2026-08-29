@@ -3,7 +3,7 @@
 
 
 (define %desktop-environment-packages
-  (list "eww"
+  (list "waybar"
 	"rofi"
 	"swaybg"
 	"swaylock-effects"
@@ -11,7 +11,11 @@
         "sway-audio-idle-inhibit"
 	"swaynotificationcenter"
         "wl-color-picker"
-	"xwayland-satellite"))
+	"wayland-protocols"
+	"slurp"
+	"xwayland-satellite"
+	"xdg-desktop-portal"
+	"xdg-desktop-portal-gnome"))
 
 (define %font-packages
   (list "font-nerd-jetbrains-mono"
@@ -33,13 +37,16 @@
 	"librewolf"
 	"epiphany"
 	"secrets"
+	"nm-tray"
 	"blueman"
 	"libnotify"
 	"pavucontrol"
 	"pulseaudio"
-	"brightnessctl"
 	"playerctl"
-	"xdg-utils"))
+	"brightnessctl"
+	"xdg-utils"
+	"pipewire"
+	"wireplumber"))
 
 (define %desktop-packages
   (append %desktop-environment-packages

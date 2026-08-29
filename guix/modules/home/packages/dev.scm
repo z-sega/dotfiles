@@ -27,7 +27,10 @@
   (list "flatpak"))
 
 (define %emacs-packages
-  (list "emacs-rg"
+  (list "emacs-pgtk"
+        "emacs-rg"
+	"emacs-lorem-ipsum"
+	"emacs-org-download"
 	"emacs-crux"
 	"emacs-telega"
 	"emacs-latex-extra"

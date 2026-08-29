@@ -12,9 +12,10 @@
 (use-modules (gnu)
 	     (gnu services dict)
 	     (gnu services databases)
+	     (gnu services desktop)
 	     (gnu packages databases)
 	     (nongnu packages linux))
-(use-service-modules cups desktop networking ssh xorg)
+(use-service-modules cups desktop networking ssh xorg nix)
 
 (operating-system
  (kernel linux)
@@ -41,7 +42,9 @@
  (packages
   (append (list (specification->package "niri")
 		(specification->package "st")
-		(specification->package "bluez"))
+		(specification->package "bluez")
+		(specification->package "xdg-desktop-portal")
+		(specification->package "xdg-desktop-portal-gnome"))
 	  %base-packages))
 
  ;; Below is the list of system services.  To search for available
@@ -51,11 +54,10 @@
    (list (service gnome-desktop-service-type)
 	 (service postgresql-service-type
 		  (postgresql-configuration
-		   (postgresql postgresql-17)))
-	 (service bluetooth-service-type
-		  (bluetooth-configuration
-		   (auto-enable? #t)))
+		   (postgresql postgresql-17)))	 
 	 (service dicod-service-type)
+
+	 (service nix-service-type)
 
          ;; To configure OpenSSH, pass an 'openssh-configuration'
          ;; record as a second argument to 'service' below.
@@ -69,7 +71,11 @@
 		   (name "swaylock")
 		   (program (file-append (specification->package "swaylock-effects") "/bin/swaylock"))
 		   (using-pam? #t)
-		   (using-setuid? #f))))
+		   (using-setuid? #f)))
+
+	 (service bluetooth-service-type
+		  (bluetooth-configuration
+		   (auto-enable? #t))))
 
    ;; This is the default list of services we
    ;; are appending to.
