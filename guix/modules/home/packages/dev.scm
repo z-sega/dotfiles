@@ -72,7 +72,6 @@
 	"emacs-racket-mode"
 	"emacs-org-contrib"
 	"emacs-ob-racket"
-	"emacs-yasnippet-snippets"
 	"emacs-yasnippet"
 	"emacs-pyvenv"
 	"emacs-elm-mode"
