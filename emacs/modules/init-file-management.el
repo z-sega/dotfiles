@@ -56,5 +56,21 @@
   :config
   (set-face-attribute 'diredfl-dir-name nil :bold t))
 
+(use-package dired-preview
+  :config
+  (setq dired-preview-delay 0.7
+	dired-preview-max-size (expt 2 20)
+	dired-preview-ignored-extensions-regexp (concat "\\."
+							"\\(gz\\|"
+							"zst\\|"
+							"tar\\|"
+							"xz\\|"
+							"rar\\|"
+							"zip\\|"
+							"iso\\|"
+							"epub"
+							"\\)"))
+  (dired-preview-global-mode 1))
+
 (provide 'init-file-management)
 ;;; init-file-management.el ends here
