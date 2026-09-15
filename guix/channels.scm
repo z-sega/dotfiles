@@ -2,7 +2,7 @@
  (channel
   (name 'ayo-guix)
   (url "file:///home/ayo/dotfiles")
-  (branch "main"))
+  (branch "ayo/t14s"))
 
  (channel
   (name 'nonguix)
