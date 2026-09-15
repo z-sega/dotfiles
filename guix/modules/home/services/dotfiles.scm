@@ -4,6 +4,7 @@
   #:use-module (guix gexp)
   #:export (dotfiles-services))
 
+
 (define (dotfiles-services dotfiles-root)
   "Return the simple-services that symlink dotfiles from DOTFILES-ROOT."
   (define (dotfile path)
@@ -28,4 +29,7 @@
 					#:recursive? #t))
                      ("emacs/snippets" ,(local-file
                                          (string-append dotfiles-root "/emacs/snippets")
-                                         #:recursive? #t))))))
+                                         #:recursive? #t))))
+   (simple-service 'guix-channels-config
+		   home-xdg-configuration-files-service-type
+		   `(("guix/channels.scm" ,(dotfile "guix/channels.scm"))))))

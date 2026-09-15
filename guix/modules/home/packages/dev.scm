@@ -101,6 +101,7 @@
   (list "gnupg"
 	"pinentry"
 	"curl"
+	"htop"
 	"rlwrap"
 	"ripgrep"
 	"tree"
