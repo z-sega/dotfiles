@@ -10,11 +10,14 @@
 ;; Indicate which modules to import to access the variables
 ;; used in this configuration.
 (use-modules (gnu)
+	     (gnu services nix)
 	     (gnu services dict)
 	     (gnu services databases)
 	     (gnu services desktop)
 	     (gnu packages databases)
 	     (nongnu packages linux))
+
+(use-package-modules package-management)
 (use-service-modules cups desktop networking ssh xorg nix)
 
 (operating-system
@@ -40,7 +43,8 @@
  ;; under their own account: use 'guix search KEYWORD' to search
  ;; for packages and 'guix install PACKAGE' to install a package.
  (packages
-  (append (list (specification->package "niri")
+  (append (list nix
+		(specification->package "niri")
 		(specification->package "st")
 		(specification->package "bluez")
 		(specification->package "xdg-desktop-portal")

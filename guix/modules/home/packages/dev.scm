@@ -52,6 +52,7 @@
 	"emacs-speed-type"
 	"emacs-ef-themes"
 	"emacs-modus-themes"
+	"emacs-nix-mode"
 	"emacs-org"
 	"emacs-org-roam"
 	"emacs-org-roam-ui"
@@ -109,6 +110,7 @@
 	"gcc-toolchain"
 	"xdot"
 	"cmake"
+	"make"
 	"nss-certs"
 	"git"
 	"direnv"))

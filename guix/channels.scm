@@ -1,8 +1,8 @@
 (list
- (channel
-  (name 'ayo-guix)
-  (url "file:///home/ayo/dotfiles")
-  (branch "ayo/t14s"))
+ ;; (channel
+ ;;  (name 'ayo-guix)
+ ;;  (url "file:///home/ayo/dotfiles")
+ ;;  (branch "ayo/t14s"))
 
  (channel
   (name 'nonguix)

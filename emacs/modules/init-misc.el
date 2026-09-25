@@ -10,6 +10,8 @@
 
 (use-package biblio)
 
+(use-package nix-mode)
+
 ;; Ensure =brew install gnu-sed=
 ;; (setq Man-sed-command "sed")
 
