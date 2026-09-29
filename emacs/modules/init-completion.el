@@ -13,7 +13,7 @@
   (corfu-popupinfo-mode 1)
   (corfu-popupinfo-delay '(0.5 . 0.1))
   ;; quit when the popup appears and I type anything else
-  (corfu-quit-no-match t) 
+  (corfu-quit-no-match t)
   ;; Might want to customize corfu-sort-function
   :bind
   (("M-RET" . completion-at-point)))
@@ -26,10 +26,10 @@
   (savehist-mode 1)
   (add-to-list 'savehist-additional-variables 'corfu-history))
 
-(use-package corfu-terminal
-  :after corfu
-  :init
-  (defvar corfu-terminal-mode))
+;; (use-package corfu-terminal
+;;   :after corfu
+;;   :init
+;;   (defvar corfu-terminal-mode))
 
 ;; Additional capf completion sources
 (use-package cape

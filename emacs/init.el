@@ -48,3 +48,6 @@
 ;; Warn about unsaved customizations when emacs is killed
 (add-hook 'kill-emacs-query-functions
           'custom-prompt-customize-unsaved-options)
+
+(provide 'init)
+;;; init.el ends here
