@@ -30,7 +30,8 @@
 	"gnome-tweaks"
 	"gnome-shell-extensions"
         "gnome-shell-extension-clipboard-indicator"
-	"glibc-locales"))
+	"glibc-locales"
+	"glib:bin"))
 
 (define %general-utility-packages
   (list "redshift-wayland"
