@@ -12,7 +12,6 @@
 	"swaynotificationcenter"
         "wl-color-picker"
 	"wayland-protocols"
-	"slurp"
 	"xwayland-satellite"
 	"xdg-desktop-portal"
 	"xdg-desktop-portal-gnome"))
@@ -46,6 +45,15 @@
 	"playerctl"
 	"brightnessctl"
 	"xdg-utils"
+	"dbus"
+	"dunst"
+	"inotify-tools"
+	"jq"
+	"wlogout"
+	"cava"
+	"power-profiles-daemon"
+	"slurp"
+	"socat"
 	"pipewire"
 	"wireplumber"))
 

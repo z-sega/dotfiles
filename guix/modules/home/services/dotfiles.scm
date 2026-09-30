@@ -20,6 +20,20 @@
    (simple-service 'niri-config
                    home-xdg-configuration-files-service-type
                    `(("niri/config.kdl" ,(dotfile "niri/config.kdl"))))
+   (simple-service 'waybar-config
+                   home-xdg-configuration-files-service-type
+                   `(("waybar/config.jsonc" ,(dotfile "waybar/config.jsonc"))
+		     ("waybar/cava.sh" ,(local-file
+					 (string-append dotfiles-root "/waybar/cava.sh")
+					 #:recursive? #t))
+		     ("waybar/style.css" ,(dotfile "waybar/style.css"))))
+   (simple-service 'wlogout-config
+                   home-xdg-configuration-files-service-type
+                   `(("wlogout/layout" ,(dotfile "wlogout/layout"))
+		     ("wlogout/icons" ,(local-file
+					 (string-append dotfiles-root "/wlogout/icons")
+					 #:recursive? #t))
+		     ("wlogout/style.css" ,(dotfile "wlogout/style.css"))))
    (simple-service 'emacs-config
                    home-xdg-configuration-files-service-type
                    `(("emacs/early-init.el" ,(dotfile "emacs/early-init.el"))

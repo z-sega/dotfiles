@@ -1,0 +1,5 @@
+* Overview
+This config is based on several dotfiles from others.
+
+* Acknowledgements
+- https://github.com/threed2y/Dotfiles/tree/main
