@@ -83,7 +83,17 @@
 
    ;; This is the default list of services we
    ;; are appending to.
-   %desktop-services))
+   (modify-services
+    %desktop-services
+    (upower-service-type
+     config =>
+     (upower-configuration
+      (inherit config)
+      (percentage-low 25)
+      (percentage-critical 12)
+      (percentage-action 7)
+      (critical-power-action 'power-off))))))
+
  (bootloader (bootloader-configuration
 	      (bootloader grub-efi-bootloader)
               (targets (list "/boot/efi"))

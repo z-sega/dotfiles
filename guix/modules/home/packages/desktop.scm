@@ -55,7 +55,8 @@
 	"slurp"
 	"socat"
 	"pipewire"
-	"wireplumber"))
+	"wireplumber"
+	"batsignal"))
 
 (define %desktop-packages
   (append %desktop-environment-packages

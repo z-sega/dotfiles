@@ -58,7 +58,7 @@
 
 (use-package dired-preview
   :config
-  (setq dired-preview-delay 0.7
+  (setq dired-preview-delay 3.0
 	dired-preview-max-size (expt 2 20)
 	dired-preview-ignored-extensions-regexp (concat "\\."
 							"\\(gz\\|"
