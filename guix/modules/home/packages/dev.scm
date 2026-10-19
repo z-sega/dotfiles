@@ -31,7 +31,6 @@
         "emacs-rg"
 	"emacs-lorem-ipsum"
 	"emacs-crux"
-	"emacs-telega"
 	"emacs-latex-extra"
 	"emacs-envrc"
 	"emacs-pinentry"

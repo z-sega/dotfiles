@@ -78,8 +78,5 @@
   		   :key   ?m
   		   :query "list:mu-discuss.googlegroups.com AND date:7d..now"))
 
-(use-package telega
-  :ensure nil)
-
 (provide 'init-messages)
 ;;; init-messages.el ends here
