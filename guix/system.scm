@@ -92,7 +92,15 @@
       (percentage-low 25)
       (percentage-critical 12)
       (percentage-action 7)
-      (critical-power-action 'power-off))))))
+      (critical-power-action 'power-off)))
+
+    (elogind-service-type
+     config =>
+     (elogind-configuration
+      (inherit config)
+      (handle-lid-switch 'suspend)
+      (handle-lid-switch-docked 'ignore)
+      (handle-lid-switch-external-power 'ignore))))))
 
  (bootloader (bootloader-configuration
 	      (bootloader grub-efi-bootloader)
